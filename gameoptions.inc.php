@@ -50,8 +50,4 @@ $game_options = array(
                 'default' => 1
             ),
 
-    */
-
-);
-
-
+    */);
