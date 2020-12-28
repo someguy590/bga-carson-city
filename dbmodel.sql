@@ -18,6 +18,13 @@
 -- Note: The database schema is created from this file when the game starts. If you modify this file,
 --       you have to restart a game to see your changes in database.
 
+ALTER TABLE `player` ADD `cowboys` INT UNSIGNED NOT NULL DEFAULT '3';
+ALTER TABLE `player` ADD `money` INT UNSIGNED NOT NULL DEFAULT '15';
+ALTER TABLE `player` ADD `revolvers` INT UNSIGNED NOT NULL DEFAULT '1';
+ALTER TABLE `player` ADD `revolver_tokens` INT UNSIGNED NOT NULL DEFAULT '1';
+ALTER TABLE `player` ADD `roads` INT UNSIGNED NOT NULL DEFAULT '1';
+ALTER TABLE `player` ADD `property_tiles` INT UNSIGNED NOT NULL DEFAULT '12';
+
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
 -- CREATE TABLE IF NOT EXISTS `card` (
@@ -33,3 +40,8 @@
 -- Example 2: add a custom field to the standard "player" table
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
+-- buildings
+-- grid location (optional as could be in building row or player stock)
+-- row location (part of its deck attribute, but optional as could be in grid or player stock)
+
+-- roads locations

@@ -50,6 +50,15 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
+if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
+    define('CITY_SETUP', 2);
+    define('INITIAL_PARCEL_CLAIMS', 3);
+    define('CHOOSE_PERSONALITY', 4);
+    define('UPDATE_TURN_ORDER', 5);
+    define('PLACE_COWBOY', 6);
+    define('STATE_END_GAME', 99);
+}
+
 
 $machinestates = array(
 
@@ -59,19 +68,50 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array("" => 2)
+        "transitions" => array("" => CITY_SETUP)
     ),
 
-    // Note: ID=2 => your first state
+    CITY_SETUP => [
+        'name' => 'citySetup',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stCitySetup',
+        'transitions' => ['initialParcelClaims' => INITIAL_PARCEL_CLAIMS]
+    ],
 
-    2 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array("playCard", "pass"),
-        "transitions" => array("playCard" => 2, "pass" => 2)
-    ),
+    INITIAL_PARCEL_CLAIMS => [
+        'name' => 'initialParcelClaims',
+        "description" => clienttranslate('${actplayer} must claim a parcel of land, it can include a mountain or the center of Carson City'),
+        "descriptionmyturn" => clienttranslate('${you} must claim a parcel of land, it can include a mountain or the center of Carson City'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['claimParcel'],
+        'transitions' => ['choosePersonality' => CHOOSE_PERSONALITY]
+    ],
+
+    CHOOSE_PERSONALITY => [
+        'name' => 'choosePersonality',
+        "description" => clienttranslate('${actplayer} must choose a personality'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a personality'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['choosePersonality'],
+        'transitions' => ['choosePersonality' => CHOOSE_PERSONALITY, 'updateTurnOrder' => UPDATE_TURN_ORDER]
+    ],
+
+    UPDATE_TURN_ORDER => [
+        'name' => 'updateTurnOrder',
+        'type' => 'game',
+        'action' => 'stUpdateTurnOrder',
+        'transitions' => ['placeCowboy' => PLACE_COWBOY]
+    ],
+    
+    PLACE_COWBOY => [
+        'name' => 'placeCowboy',
+        "description" => clienttranslate('${actplayer} must place a cowboy or pass'),
+        "descriptionmyturn" => clienttranslate('${you} must place a cowboy or pass'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['placeCowboy', 'pass'],
+        'transitions' => ['placeCowboy' => PLACE_COWBOY]
+    ],
 
     /*
     Examples:
