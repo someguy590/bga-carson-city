@@ -45,6 +45,18 @@
 /* Note: you must not use any @import directive */
 
 /********* You can start writing your CSS below this line: **********/
+#carson_city_play_area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#board {
+    background-image: url('img/board.jpg');
+    position: relative;
+    width: 700px;
+    height: 917px;
+}
 
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
