@@ -26,7 +26,12 @@
 -->
 
 <div id="carson_city_play_area">
-    <div id="board"></div>
+    <div id="board">
+        <!-- BEGIN city_square -->
+        <div id="city_square_{CITY_SQUARE_ID}" class="city_square" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END city_square -->
+        <div id="tiles"></div>
+    </div>
 </div>
 
 

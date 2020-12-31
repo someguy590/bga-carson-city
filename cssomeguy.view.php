@@ -41,6 +41,20 @@ class view_cssomeguy_cssomeguy extends game_view
 
     /*********** Place your code below:  ************/
 
+    $city_x_start = 55;
+    $city_y_start = 310;
+    $city_square_x_scale = 74;
+    $city_square_y_scale = 75;
+    $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'city_square');
+    for ($i = 0; $i < 64; $i++) {
+      $x_px = ($i % 8) * $city_square_x_scale + $city_x_start;
+      $y_px = intdiv($i, 8) * $city_square_y_scale + $city_y_start;
+      $this->page->insert_block("city_square", [
+        'CITY_SQUARE_ID' => $i,
+        'LEFT' => $x_px,
+        'TOP' => $y_px
+      ]);
+    }
 
     /*
         

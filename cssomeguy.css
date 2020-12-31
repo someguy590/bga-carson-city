@@ -58,6 +58,19 @@
     height: 917px;
 }
 
+.city_square {
+    position: absolute;
+    width: 74px;
+    height: 75px;
+}
+
+.city_tile {
+    position: absolute;
+    background-image: url('img/city_tiles.jpg');
+    width: 52px;
+    height: 52px;
+}
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 
