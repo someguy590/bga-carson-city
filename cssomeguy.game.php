@@ -41,6 +41,9 @@ class cssomeguy extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ));
+
+        $this->city_tiles = self::getNew("module.common.deck");
+        $this->city_tiles->init('city_tiles');
     }
 
     protected function getGameName()
