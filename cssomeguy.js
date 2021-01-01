@@ -55,7 +55,14 @@ define([
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
-
+                let cityTiles = gamedatas.cityTiles;
+                for (let cityTile of Object.values(cityTiles)) {
+                    dojo.place(this.format_block('jstplCityTile', {
+                        cityTileId: cityTile.id,
+                        cityTileTypeId: cityTile.type
+                    }), 'tiles');
+                    this.placeOnObject('city_tile_' + cityTile.id, 'city_square_' + cityTile.location_arg);
+                }
 
                 // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();

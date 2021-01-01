@@ -38,6 +38,7 @@
 <script type="text/javascript">
 
 // Javascript HTML templates
+var jstplCityTile = '<div class="city_tile city_tile_${cityTileTypeId}" id="city_tile_${cityTileId}"></div>';
 
     /*
     // Example:

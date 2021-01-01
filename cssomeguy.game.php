@@ -91,6 +91,7 @@ class cssomeguy extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
+        $this->setupCity();
 
 
         // Activate first player (which is in general a good idea :) )
@@ -120,6 +121,7 @@ class cssomeguy extends Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        $result['cityTiles'] = $this->city_tiles->getCardsInLocation('city');
 
         return $result;
     }
@@ -150,7 +152,35 @@ class cssomeguy extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+    function setupCity()
+    {
+        $occupied_locations = [];
 
+        // city center
+        do {
+            $center_x_location = bga_rand(1, 6);
+            $center_y_location = bga_rand(1, 6);
+            $center_location = $center_y_location * 8 + $center_x_location;
+        } while (in_array($center_location, $occupied_locations));
+        $occupied_locations[] = $center_location;
+        $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, 1, -1, 'city', $center_location)";
+        $this->DbQuery($sql);
+
+        // mountains
+        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $values = [];
+        for ($i = 0; $i < 9; $i++) {
+            do {
+                $mountain_x_location = bga_rand(1, 6);
+                $mountain_y_location = bga_rand(1, 6);
+                $mountain_location = $mountain_y_location * 8 + $mountain_x_location;
+            } while (in_array($mountain_location, $occupied_locations));
+            $occupied_locations[] = $mountain_location;
+            $values[] = "(0, -1, 'city', $mountain_location)";
+        }
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions

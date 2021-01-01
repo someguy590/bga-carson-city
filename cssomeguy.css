@@ -71,6 +71,14 @@
     height: 52px;
 }
 
+.city_tile_0 {
+    background-position: 0px 0px;
+}
+
+.city_tile_1 {
+    background-position: -52px 0px;
+}
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 
