@@ -42,8 +42,8 @@ class cssomeguy extends Table
             //      ...
         ));
 
-        $this->city_tiles = self::getNew("module.common.deck");
-        $this->city_tiles->init('city_tiles');
+        $this->city_tiles_deck = self::getNew("module.common.deck");
+        $this->city_tiles_deck->init('city_tiles');
     }
 
     protected function getGameName()
@@ -121,7 +121,7 @@ class cssomeguy extends Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $result['cityTiles'] = $this->city_tiles->getCardsInLocation('city');
+        $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
     }
