@@ -51,11 +51,10 @@
 //    !! It is not a good idea to modify this file when a game is running !!
 
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
-    define('CITY_SETUP', 2);
-    define('INITIAL_PARCEL_CLAIMS', 3);
-    define('CHOOSE_PERSONALITY', 4);
-    define('UPDATE_TURN_ORDER', 5);
-    define('PLACE_COWBOY', 6);
+    define('INITIAL_PARCEL_CLAIMS', 2);
+    define('CHOOSE_PERSONALITY', 3);
+    define('UPDATE_TURN_ORDER', 4);
+    define('PLACE_COWBOY', 5);
     define('STATE_END_GAME', 99);
 }
 
@@ -68,16 +67,8 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array("" => CITY_SETUP)
+        "transitions" => array("" => INITIAL_PARCEL_CLAIMS)
     ),
-
-    CITY_SETUP => [
-        'name' => 'citySetup',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stCitySetup',
-        'transitions' => ['initialParcelClaims' => INITIAL_PARCEL_CLAIMS]
-    ],
 
     INITIAL_PARCEL_CLAIMS => [
         'name' => 'initialParcelClaims',
