@@ -27,6 +27,10 @@
 
 <div id="carson_city_play_area">
     <div id="board">
+        <!-- BEGIN action_square -->
+        <div id="action_square_{ACTION_SQUARE_ID}" class="action_square {ACTION_SQUARE_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END action_square -->
+
         <!-- BEGIN city_square -->
         <div id="city_square_{CITY_SQUARE_ID}" class="city_square" style="left: {LEFT}px; top: {TOP}px;"></div>
         <!-- END city_square -->

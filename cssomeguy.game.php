@@ -92,7 +92,7 @@ class cssomeguy extends Table
 
         // TODO: setup the initial game situation here
         $this->setupCity();
-
+        $this->setupBuildings();
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -121,6 +121,7 @@ class cssomeguy extends Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
         $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
@@ -182,6 +183,31 @@ class cssomeguy extends Table
         }
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
+    }
+
+    function setupBuildings()
+    {
+        $buildings = [];
+        foreach ($this->city_tiles as $city_tile_type_id => $city_tile) {
+            if ($city_tile['is_building'])
+                $buildings[] = ['type' => $city_tile_type_id, 'type_arg' => -1, 'nbr' => $city_tile['count']];
+        }
+        $this->city_tiles_deck->createCards($buildings);
+        $this->city_tiles_deck->shuffle('deck');
+
+        $ranch_tile_type_id = $this->city_tile_type_ids['ranch'];
+        $mine_tile_type_id = $this->city_tile_type_ids['mine'];
+        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $values = [];
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 0)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', 1)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 5)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', 6)";
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
+
+        for ($i = 2; $i <= 4; $i++)
+            $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
     }
 
     //////////////////////////////////////////////////////////////////////////////

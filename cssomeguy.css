@@ -64,6 +64,12 @@
     height: 75px;
 }
 
+.building_construction_square {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+}
+
 .city_tile {
     position: absolute;
     background-image: url('img/city_tiles.jpg');
@@ -77,6 +83,38 @@
 
 .city_tile_1 {
     background-position: -52px 0px;
+}
+
+.city_tile_2 {
+    background-position: -104px 0px;
+}
+
+.city_tile_3 {
+    background-position: -156px 0px;
+}
+
+.city_tile_4 {
+    background-position: -208px 0px;
+}
+
+.city_tile_5 {
+    background-position: -260px 0px;
+}
+
+.city_tile_6 {
+    background-position: -312px 0px;
+}
+
+.city_tile_7 {
+    background-position: -364px 0px;
+}
+
+.city_tile_8 {
+    background-position: -416px 0px;
+}
+
+.city_tile_9 {
+    background-position: -468px 0px;
 }
 
 /*

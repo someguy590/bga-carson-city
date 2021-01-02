@@ -55,6 +55,17 @@ define([
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
+                let buildingConstructionSquares = gamedatas.buildingConstructionSquares;
+                console.log(buildingConstructionSquares);
+                for (let buildingConstructionSquare of Object.values(buildingConstructionSquares)) {
+                    dojo.place(this.format_block('jstplCityTile', {
+                        cityTileId: buildingConstructionSquare.id,
+                        cityTileTypeId: buildingConstructionSquare.type
+                    }), 'tiles');
+                    this.placeOnObject('city_tile_' + buildingConstructionSquare.id, 'action_square_' + buildingConstructionSquare.location_arg);
+                }
+
+                // TODO: Set up your game interface here, according to "gamedatas"
                 let cityTiles = gamedatas.cityTiles;
                 for (let cityTile of Object.values(cityTiles)) {
                     dojo.place(this.format_block('jstplCityTile', {
