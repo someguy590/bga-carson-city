@@ -163,20 +163,22 @@ class cssomeguy extends Table
             $center_location = $center_y_location * 8 + $center_x_location;
         } while (in_array($center_location, $occupied_locations));
         $occupied_locations[] = $center_location;
-        $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, 1, -1, 'city', $center_location)";
+        $house_tile_type_id = $this->city_tile_type_ids['house'];
+        $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, $house_tile_type_id , -1, 'city', $center_location)";
         $this->DbQuery($sql);
 
         // mountains
+        $mountain_tile_type_id = $this->city_tile_type_ids['mountain'];
         $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
         $values = [];
-        for ($i = 0; $i < 9; $i++) {
+        for ($i = 0; $i < $this->city_tiles[$this->city_tile_type_ids['mountain']]['count']; $i++) {
             do {
                 $mountain_x_location = bga_rand(1, 6);
                 $mountain_y_location = bga_rand(1, 6);
                 $mountain_location = $mountain_y_location * 8 + $mountain_x_location;
             } while (in_array($mountain_location, $occupied_locations));
             $occupied_locations[] = $mountain_location;
-            $values[] = "(0, -1, 'city', $mountain_location)";
+            $values[] = "($mountain_tile_type_id, -1, 'city', $mountain_location)";
         }
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
