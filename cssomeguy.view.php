@@ -73,6 +73,63 @@ class view_cssomeguy_cssomeguy extends game_view
       ]);
     }
 
+    $placed_roads = $this->game->getObjectListFromDB("SELECT road_id FROM roads", true);
+
+    $horizontal_road_row_size = 8;
+    $horizontal_road_x_start = 59;
+    $horizontal_road_y_start = $city_y_start;
+    $horizontal_road_x_scale = 66;
+    $horizontal_road_x_offset = 8;
+    $horizontal_road_y_offset = 75;
+    
+    $vertical_road_row_size = 9;
+    $vertical_road_x_start = $city_x_start;
+    $vertical_road_y_start = 314;
+    $vertical_road_y_scale = 66;
+    $vertical_road_x_offset = 74;
+    $vertical_road_y_offset = 8;
+
+    $road_id = 0;
+    $horizontal_road_y_px = $horizontal_road_y_start;
+    $vertical_road_y_px = $vertical_road_y_start;
+    $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'road');
+    for ($row = 0; $row < 17; $row++) {
+      if ($row % 2 == 0) {
+        $horizontal_road_x_px = $horizontal_road_x_start;
+        for ($road = 0; $road < $horizontal_road_row_size; $road++) {
+          $next_road_id = $road_id++;
+          $classes = 'horizontal_road_space';
+          if (in_array($next_road_id, $placed_roads))
+            $classes .= ' road_placed';
+          $this->page->insert_block('road', [
+            'ROAD_ID' => $next_road_id,
+            'ROAD_CLASSES' => $classes,
+            'LEFT' => $horizontal_road_x_px,
+            'TOP' => $horizontal_road_y_px
+          ]);
+          $horizontal_road_x_px += $horizontal_road_x_scale + $horizontal_road_x_offset;
+        }
+        $horizontal_road_y_px += $horizontal_road_y_offset;
+      }
+      else {
+        $vertical_road_x_px = $vertical_road_x_start;
+        for ($road = 0; $road < $vertical_road_row_size; $road++) {
+          $next_road_id = $road_id++;
+          $classes = 'vertical_road_space';
+          if (in_array($next_road_id, $placed_roads))
+            $classes .= ' road_placed';
+          $this->page->insert_block('road', [
+            'ROAD_ID' => $next_road_id,
+            'ROAD_CLASSES' => $classes,
+            'LEFT' => $vertical_road_x_px,
+            'TOP' => $vertical_road_y_px
+          ]);
+          $vertical_road_x_px += $vertical_road_x_offset;
+        }
+        $vertical_road_y_px += $vertical_road_y_scale + $vertical_road_y_offset;
+      }
+    }
+
     /*
         
         // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}

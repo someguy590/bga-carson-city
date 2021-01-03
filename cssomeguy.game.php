@@ -168,6 +168,15 @@ class cssomeguy extends Table
         $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, $house_tile_type_id , -1, 'city', $center_location)";
         $this->DbQuery($sql);
 
+        // roads
+        $horizontal_road_row_size = 8;
+        $top_horizontal_road_id = $center_y_location * 17 + $center_x_location;
+        $bottom_horizontal_road_id = ($center_y_location + 1) * 17 + $center_x_location;
+        $left_vertical_road_id = $center_y_location * 17 + $center_x_location + $horizontal_road_row_size;
+        $right_vertical_road_id = $left_vertical_road_id + 1;
+        $sql = "INSERT INTO roads (road_id) VALUES ($top_horizontal_road_id), ($bottom_horizontal_road_id), ($left_vertical_road_id), ($right_vertical_road_id)";
+        $this->DbQuery($sql);
+
         // mountains
         $mountain_tile_type_id = $this->city_tile_type_ids['mountain'];
         $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";

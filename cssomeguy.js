@@ -56,7 +56,6 @@ define([
 
                 // TODO: Set up your game interface here, according to "gamedatas"
                 let buildingConstructionSquares = gamedatas.buildingConstructionSquares;
-                console.log(buildingConstructionSquares);
                 for (let buildingConstructionSquare of Object.values(buildingConstructionSquares)) {
                     dojo.place(this.format_block('jstplCityTile', {
                         cityTileId: buildingConstructionSquare.id,

@@ -117,6 +117,33 @@
     background-position: -468px 0px;
 }
 
+.road_space {
+    position: absolute;
+}
+
+.horizontal_road_space {
+    width: 66px;
+    height: 12px;
+}
+
+.vertical_road_space {
+    width: 12px;
+    height: 66px;
+}
+
+.road_placed {
+    background-image: url('img/road.png');
+
+}
+
+.road_placed.horizontal_road_space {
+    background-position: -10px -10px;
+}
+
+.road_placed.vertical_road_space {
+    background-position: -10px -42px;
+}
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 

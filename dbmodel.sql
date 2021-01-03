@@ -34,6 +34,11 @@ CREATE TABLE IF NOT EXISTS `city_tiles` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+CREATE TABLE IF NOT EXISTS `roads` (
+  `road_id` int unsigned NOT NULL,
+  PRIMARY KEY (`road_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
 -- CREATE TABLE IF NOT EXISTS `card` (

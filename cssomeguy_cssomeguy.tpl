@@ -34,6 +34,11 @@
         <!-- BEGIN city_square -->
         <div id="city_square_{CITY_SQUARE_ID}" class="city_square" style="left: {LEFT}px; top: {TOP}px;"></div>
         <!-- END city_square -->
+
+        <!-- BEGIN road -->
+        <div id="road_{ROAD_ID}" class="road_space {ROAD_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END road -->
+
         <div id="tiles"></div>
     </div>
 </div>
