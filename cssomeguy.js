@@ -48,10 +48,35 @@ define([
                 console.log("Starting game setup");
 
                 // Setting up player boards
-                for (var player_id in gamedatas.players) {
-                    var player = gamedatas.players[player_id];
-
+                dojo.query('.fa.fa-star').removeClass('fa fa-star').addClass('counter_icon vp_icon');
+                this.counters = {};
+                for (let [playerId, player] of Object.entries(gamedatas.players)) {
                     // TODO: Setting up players boards if needed
+                    let playerBoardDiv = $('player_board_' + playerId);
+                    dojo.place(this.format_block('jstplPlayerBoard', { playerId }), playerBoardDiv);
+                    
+                    let playerCounter = {};
+                    playerCounter.cowboys = new ebg.counter();
+                    playerCounter.cowboys.create('cowboy_count_' + playerId);
+                    playerCounter.cowboys.setValue(player.cowboys);
+
+                    playerCounter.money = new ebg.counter();
+                    playerCounter.money.create('money_count_' + playerId);
+                    playerCounter.money.setValue(player.money);
+
+                    playerCounter.revolverTokens = new ebg.counter();
+                    playerCounter.revolverTokens.create('revolver_token_count_' + playerId);
+                    playerCounter.revolverTokens.setValue(player.revolverTokens);
+
+                    playerCounter.roads = new ebg.counter();
+                    playerCounter.roads.create('road_count_' + playerId);
+                    playerCounter.roads.setValue(player.roads);
+
+                    playerCounter.propertyTiles = new ebg.counter();
+                    playerCounter.propertyTiles.create('property_tile_count_' + playerId);
+                    playerCounter.propertyTiles.setValue(player.propertyTiles);
+
+                    this.counters[playerId] = playerCounter;
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
