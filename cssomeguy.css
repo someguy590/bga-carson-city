@@ -147,7 +147,6 @@
 
 .road_placed {
     background-image: url('img/road.png');
-
 }
 
 .road_placed.horizontal_road_space {
@@ -248,20 +247,3 @@
     background-position: -72px 0px;
 }
 
-/*
-    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
-
-    .white_token {
-        background-image: url('img/tokens.png');
-        background-position: 0px 0px;
-    }
-    .black_token {
-        background-image: url('img/tokens.png');
-        background-position: -20px 0px;
-    }
-    .token {
-        width: 20px;
-        height: 20px;
-        background-repeat: none;
-    }
-*/

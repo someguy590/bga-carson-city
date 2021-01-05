@@ -61,7 +61,7 @@ define([
                     // TODO: Setting up players boards if needed
                     let playerBoardDiv = $('player_board_' + playerId);
                     dojo.place(this.format_block('jstplPlayerBoard', { playerId, color: player.color }), playerBoardDiv);
-                    
+
                     let playerCounter = {};
                     playerCounter.cowboys = new ebg.counter();
                     playerCounter.cowboys.create('cowboy_count_' + playerId);
@@ -99,7 +99,6 @@ define([
                     this.placeOnObject('city_tile_' + buildingConstructionSquare.id, 'action_square_' + buildingConstructionSquare.location_arg);
                 }
 
-                // TODO: Set up your game interface here, according to "gamedatas"
                 let cityTiles = gamedatas.cityTiles;
                 for (let cityTile of Object.values(cityTiles)) {
                     dojo.place(this.format_block('jstplCityTile', {
