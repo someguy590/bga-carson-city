@@ -60,7 +60,7 @@ define([
 
                     // TODO: Setting up players boards if needed
                     let playerBoardDiv = $('player_board_' + playerId);
-                    dojo.place(this.format_block('jstplPlayerBoard', { playerId }), playerBoardDiv);
+                    dojo.place(this.format_block('jstplPlayerBoard', { playerId, color: player.color }), playerBoardDiv);
                     
                     let playerCounter = {};
                     playerCounter.cowboys = new ebg.counter();

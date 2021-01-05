@@ -69,7 +69,7 @@ var jstplPlayerBoard = '\
         <div class="counter_icon money_icon"></div><span id="money_count_${playerId}" class="resource_counter"></span>\
         <div class="counter_icon revolver_token_icon"></div><span id="revolver_token_count_${playerId}" class="resource_counter"></span>\
         <div class="counter_icon road_icon"></div><span id="road_count_${playerId}" class="resource_counter"></span>\
-        <div class="counter_icon property_tile_icon"></div><span id="property_tile_count_${playerId}" class="resource_counter"></span>\
+        <div class="counter_icon property_tile_icon" style="background-color: #${color}"></div><span id="property_tile_count_${playerId}" class="resource_counter"></span>\
     </div>';
 
     /*
