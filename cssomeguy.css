@@ -193,6 +193,36 @@
     font-size: 25px;
 }
 
+
+.player_piece {
+    position: absolute;
+    background-image: url('img/player_pieces.png');
+}
+
+.player_piece.peg {
+    width: 18px; height: 23px;
+}
+
+.player_piece.peg.peg_0000ff {
+    background-position: 0px 0px;
+}
+
+.player_piece.peg.peg_008000 {
+    background-position: -18px 0px;
+}
+
+.player_piece.peg.peg_f07f16  {
+    background-position: -36px 0px;
+}
+
+.player_piece.peg.peg_ff0000 {
+    background-position: -54px 0px;
+}
+
+.player_piece.peg.peg_ffa500 {
+    background-position: -72px 0px;
+}
+
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 

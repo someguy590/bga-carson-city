@@ -51,6 +51,13 @@ define([
                 dojo.query('.fa.fa-star').removeClass('fa fa-star').addClass('counter_icon vp_icon');
                 this.counters = {};
                 for (let [playerId, player] of Object.entries(gamedatas.players)) {
+                    dojo.place(this.format_block('jstplPeg', {
+                        turnOrder: player.turnOrder,
+                        playerId: playerId,
+                        color: player.color
+                    }), 'tiles');
+                    this.placeOnObject(`peg_${player.turnOrder}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+
                     // TODO: Setting up players boards if needed
                     let playerBoardDiv = $('player_board_' + playerId);
                     dojo.place(this.format_block('jstplPlayerBoard', { playerId }), playerBoardDiv);

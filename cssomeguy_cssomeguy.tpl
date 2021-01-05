@@ -55,6 +55,8 @@
 <script type="text/javascript">
 
 // Javascript HTML templates
+var jstplPeg = '<div id="peg_${turnOrder}_${playerId}" class="player_piece peg peg_${color}"></div>';
+
 var jstplCityTile = '<div class="city_tile city_tile_${cityTileTypeId}" id="city_tile_${cityTileId}"></div>';
 
 var jstplPlayerBoard = '\

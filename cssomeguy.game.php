@@ -94,6 +94,10 @@ class cssomeguy extends Table
         $this->setupCity();
         $this->setupBuildings();
 
+        // turn order
+        $sql = "UPDATE player SET turn_order=player_no";
+        $this->DbQuery($sql);
+
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
@@ -117,7 +121,7 @@ class cssomeguy extends Table
 
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles FROM player ";
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
