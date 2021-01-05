@@ -48,14 +48,66 @@ define([
                 console.log("Starting game setup");
 
                 // Setting up player boards
-                for (var player_id in gamedatas.players) {
-                    var player = gamedatas.players[player_id];
+                dojo.query('.fa.fa-star').removeClass('fa fa-star').addClass('counter_icon vp_icon');
+                this.counters = {};
+                for (let [playerId, player] of Object.entries(gamedatas.players)) {
+                    dojo.place(this.format_block('jstplPeg', {
+                        turnOrder: player.turnOrder,
+                        playerId: playerId,
+                        color: player.color
+                    }), 'tiles');
+                    this.placeOnObject(`peg_${player.turnOrder}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
 
                     // TODO: Setting up players boards if needed
+                    let playerBoardDiv = $('player_board_' + playerId);
+                    dojo.place(this.format_block('jstplPlayerBoard', { playerId, color: player.color }), playerBoardDiv);
+                    
+                    let playerCounter = {};
+                    playerCounter.cowboys = new ebg.counter();
+                    playerCounter.cowboys.create('cowboy_count_' + playerId);
+                    playerCounter.cowboys.setValue(player.cowboys);
+
+                    playerCounter.money = new ebg.counter();
+                    playerCounter.money.create('money_count_' + playerId);
+                    playerCounter.money.setValue(player.money);
+
+                    playerCounter.revolverTokens = new ebg.counter();
+                    playerCounter.revolverTokens.create('revolver_token_count_' + playerId);
+                    playerCounter.revolverTokens.setValue(player.revolverTokens);
+
+                    playerCounter.roads = new ebg.counter();
+                    playerCounter.roads.create('road_count_' + playerId);
+                    playerCounter.roads.setValue(player.roads);
+
+                    playerCounter.propertyTiles = new ebg.counter();
+                    playerCounter.propertyTiles.create('property_tile_count_' + playerId);
+                    playerCounter.propertyTiles.setValue(player.propertyTiles);
+
+                    this.counters[playerId] = playerCounter;
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
+                dojo.place(this.format_block('jstplRoundTrackerToken', {}), 'tiles');
+                this.placeOnObject('round_tracker_token', 'initial_round_tracker_position');
 
+                let buildingConstructionSquares = gamedatas.buildingConstructionSquares;
+                for (let buildingConstructionSquare of Object.values(buildingConstructionSquares)) {
+                    dojo.place(this.format_block('jstplCityTile', {
+                        cityTileId: buildingConstructionSquare.id,
+                        cityTileTypeId: buildingConstructionSquare.type
+                    }), 'tiles');
+                    this.placeOnObject('city_tile_' + buildingConstructionSquare.id, 'action_square_' + buildingConstructionSquare.location_arg);
+                }
+
+                // TODO: Set up your game interface here, according to "gamedatas"
+                let cityTiles = gamedatas.cityTiles;
+                for (let cityTile of Object.values(cityTiles)) {
+                    dojo.place(this.format_block('jstplCityTile', {
+                        cityTileId: cityTile.id,
+                        cityTileTypeId: cityTile.type
+                    }), 'tiles');
+                    this.placeOnObject('city_tile_' + cityTile.id, 'city_square_' + cityTile.location_arg);
+                }
 
                 // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();

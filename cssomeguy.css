@@ -45,6 +45,208 @@
 /* Note: you must not use any @import directive */
 
 /********* You can start writing your CSS below this line: **********/
+#carson_city_play_area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#board {
+    background-image: url('img/board.jpg');
+    position: relative;
+    width: 700px;
+    height: 917px;
+}
+
+.turn_tracker {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+}
+
+.city_square {
+    position: absolute;
+    width: 74px;
+    height: 75px;
+}
+
+.building_construction_square {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+}
+
+#initial_round_tracker_position {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: 549px;
+    top: 225px;
+}
+
+.city_tile {
+    position: absolute;
+    background-image: url('img/city_tiles.jpg');
+    width: 52px;
+    height: 52px;
+}
+
+.city_tile_0 {
+    background-position: 0px 0px;
+}
+
+.city_tile_1 {
+    background-position: -52px 0px;
+}
+
+.city_tile_2 {
+    background-position: -104px 0px;
+}
+
+.city_tile_3 {
+    background-position: -156px 0px;
+}
+
+.city_tile_4 {
+    background-position: -208px 0px;
+}
+
+.city_tile_5 {
+    background-position: -260px 0px;
+}
+
+.city_tile_6 {
+    background-position: -312px 0px;
+}
+
+.city_tile_7 {
+    background-position: -364px 0px;
+}
+
+.city_tile_8 {
+    background-position: -416px 0px;
+}
+
+.city_tile_9 {
+    background-position: -468px 0px;
+}
+
+.road_space {
+    position: absolute;
+}
+
+.horizontal_road_space {
+    width: 66px;
+    height: 12px;
+}
+
+.vertical_road_space {
+    width: 12px;
+    height: 66px;
+}
+
+.road_placed {
+    background-image: url('img/road.png');
+
+}
+
+.road_placed.horizontal_road_space {
+    background-position: -10px -10px;
+}
+
+.road_placed.vertical_road_space {
+    background-position: -10px -42px;
+}
+
+.counter_icon {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    position: relative;
+    background-repeat: no-repeat;
+    background-image: url('img/icons.png');
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
+.cowboy_icon {
+    width: 20px;
+    background-position: 0px 0px;
+}
+
+.money_icon {
+    height: 16px;
+    background-position: -20px 0px;
+}
+
+.revolver_token_icon {
+    background-position: -45px 0px;
+}
+
+.road_icon {
+    height: 5px;
+    background-position: -70px 0px;
+}
+
+.property_tile_icon {
+    background-position: -95px 0px;
+}
+
+.vp_icon {
+    height: 18px;
+    background-position: -120px 0px;
+}
+
+.resource_counter, .player_score_value {
+    font-size: 25px;
+}
+
+
+.game_token {
+    position: absolute;
+    background-image: url('img/game_tokens.png');
+}
+
+.game_token.three_revolver_token {
+    width: 46px;
+    height: 46px;
+    background-position: 0px 0px;
+}
+
+.game_token.round_tracker_token {
+    width: 40px;
+    height: 40px;
+    background-position: -46px 0px;
+}
+
+.player_piece {
+    position: absolute;
+    background-image: url('img/player_pieces.png');
+}
+
+.player_piece.peg {
+    width: 18px; height: 23px;
+}
+
+.player_piece.peg.peg_0000ff {
+    background-position: 0px 0px;
+}
+
+.player_piece.peg.peg_008000 {
+    background-position: -18px 0px;
+}
+
+.player_piece.peg.peg_f07f16  {
+    background-position: -36px 0px;
+}
+
+.player_piece.peg.peg_ff0000 {
+    background-position: -54px 0px;
+}
+
+.player_piece.peg.peg_ffa500 {
+    background-position: -72px 0px;
+}
 
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):

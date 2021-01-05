@@ -25,13 +25,52 @@
     Please REMOVE this comment before publishing your game on BGA
 -->
 
+<div id="carson_city_play_area">
+    <div id="board">
+        <!-- BEGIN current_turn_tracker -->
+        <div id="current_turn_tracker_{TRACKER_ID}" class="turn_tracker" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END current_turn_tracker -->
 
-This is your game interface. You can edit this HTML in your ".tpl" file.
+        <!-- BEGIN pass_turn_tracker -->
+        <div id="pass_turn_tracker_{TRACKER_ID}" class="turn_tracker" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END pass_turn_tracker -->
+
+        <!-- BEGIN action_square -->
+        <div id="action_square_{ACTION_SQUARE_ID}" class="action_square {ACTION_SQUARE_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END action_square -->
+
+        <div id="initial_round_tracker_position"></div>
+
+        <!-- BEGIN city_square -->
+        <div id="city_square_{CITY_SQUARE_ID}" class="city_square" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END city_square -->
+
+        <!-- BEGIN road -->
+        <div id="road_{ROAD_ID}" class="road_space {ROAD_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
+        <!-- END road -->
+
+        <div id="tiles"></div>
+    </div>
+</div>
 
 
 <script type="text/javascript">
 
 // Javascript HTML templates
+var jstplPeg = '<div id="peg_${turnOrder}_${playerId}" class="player_piece peg peg_${color}"></div>';
+
+var jstplRoundTrackerToken = '<div id="round_tracker_token" class="game_token round_tracker_token"></div>';
+
+var jstplCityTile = '<div class="city_tile city_tile_${cityTileTypeId}" id="city_tile_${cityTileId}"></div>';
+
+var jstplPlayerBoard = '\
+    <div class="cp_board">\
+        <div class="counter_icon cowboy_icon"></div><span id="cowboy_count_${playerId}" class="resource_counter"></span>\
+        <div class="counter_icon money_icon"></div><span id="money_count_${playerId}" class="resource_counter"></span>\
+        <div class="counter_icon revolver_token_icon"></div><span id="revolver_token_count_${playerId}" class="resource_counter"></span>\
+        <div class="counter_icon road_icon"></div><span id="road_count_${playerId}" class="resource_counter"></span>\
+        <div class="counter_icon property_tile_icon" style="background-color: #${color}"></div><span id="property_tile_count_${playerId}" class="resource_counter"></span>\
+    </div>';
 
     /*
     // Example:

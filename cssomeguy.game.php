@@ -41,6 +41,9 @@ class cssomeguy extends Table
             //    "my_second_game_variant" => 101,
             //      ...
         ));
+
+        $this->city_tiles_deck = self::getNew("module.common.deck");
+        $this->city_tiles_deck->init('city_tiles');
     }
 
     protected function getGameName()
@@ -88,7 +91,12 @@ class cssomeguy extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
+        $this->setupCity();
+        $this->setupBuildings();
 
+        // turn order
+        $sql = "UPDATE player SET turn_order=player_no";
+        $this->DbQuery($sql);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -113,10 +121,12 @@ class cssomeguy extends Table
 
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player ";
         $result['players'] = self::getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
+        $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
     }
@@ -147,7 +157,71 @@ class cssomeguy extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+    function setupCity()
+    {
+        $occupied_locations = [];
 
+        // city center
+        do {
+            $center_x_location = bga_rand(1, 6);
+            $center_y_location = bga_rand(1, 6);
+            $center_location = $center_y_location * 8 + $center_x_location;
+        } while (in_array($center_location, $occupied_locations));
+        $occupied_locations[] = $center_location;
+        $house_tile_type_id = $this->city_tile_type_ids['house'];
+        $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, $house_tile_type_id , -1, 'city', $center_location)";
+        $this->DbQuery($sql);
+
+        // roads
+        $horizontal_road_row_size = 8;
+        $top_horizontal_road_id = $center_y_location * 17 + $center_x_location;
+        $bottom_horizontal_road_id = ($center_y_location + 1) * 17 + $center_x_location;
+        $left_vertical_road_id = $center_y_location * 17 + $center_x_location + $horizontal_road_row_size;
+        $right_vertical_road_id = $left_vertical_road_id + 1;
+        $sql = "INSERT INTO roads (road_id) VALUES ($top_horizontal_road_id), ($bottom_horizontal_road_id), ($left_vertical_road_id), ($right_vertical_road_id)";
+        $this->DbQuery($sql);
+
+        // mountains
+        $mountain_tile_type_id = $this->city_tile_type_ids['mountain'];
+        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $values = [];
+        for ($i = 0; $i < $this->city_tiles[$this->city_tile_type_ids['mountain']]['count']; $i++) {
+            do {
+                $mountain_x_location = bga_rand(1, 6);
+                $mountain_y_location = bga_rand(1, 6);
+                $mountain_location = $mountain_y_location * 8 + $mountain_x_location;
+            } while (in_array($mountain_location, $occupied_locations));
+            $occupied_locations[] = $mountain_location;
+            $values[] = "($mountain_tile_type_id, -1, 'city', $mountain_location)";
+        }
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
+    }
+
+    function setupBuildings()
+    {
+        $buildings = [];
+        foreach ($this->city_tiles as $city_tile_type_id => $city_tile) {
+            if ($city_tile['is_building'])
+                $buildings[] = ['type' => $city_tile_type_id, 'type_arg' => -1, 'nbr' => $city_tile['count']];
+        }
+        $this->city_tiles_deck->createCards($buildings);
+        $this->city_tiles_deck->shuffle('deck');
+
+        $ranch_tile_type_id = $this->city_tile_type_ids['ranch'];
+        $mine_tile_type_id = $this->city_tile_type_ids['mine'];
+        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $values = [];
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 0)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', 1)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 5)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', 6)";
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
+
+        for ($i = 2; $i <= 4; $i++)
+            $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions

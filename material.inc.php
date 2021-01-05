@@ -20,6 +20,70 @@
  *
  */
 
+$this->city_tile_type_ids = [
+  'mountain' => 0,
+  'house' => 1,
+  'ranch' => 2,
+  'mine' => 3,
+  'bank' => 4,
+  'drugstore' => 5,
+  'hotel' => 6,
+  'saloon' => 7,
+  'prison' => 8,
+  'church' => 9
+];
+
+$this->city_tiles = [
+  $this->city_tile_type_ids['mountain'] => [
+    'name' => clienttranslate('mountain'),
+    'count' => 9,
+    'is_building' => false
+  ],
+  $this->city_tile_type_ids['house'] => [
+    'name' => clienttranslate('house'),
+    'is_building' => false
+  ],
+  $this->city_tile_type_ids['ranch'] => [
+    'name' => clienttranslate('ranch'),
+    'count' => 4,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['mine'] => [
+    'name' => clienttranslate('mine'),
+    'count' => 4,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['bank'] => [
+    'name' => clienttranslate('bank'),
+    'count' => 4,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['drugstore'] => [
+    'name' => clienttranslate('drugstore'),
+    'count' => 4,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['hotel'] => [
+    'name' => clienttranslate('hotel'),
+    'count' => 3,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['saloon'] => [
+    'name' => clienttranslate('saloon'),
+    'count' => 3,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['prison'] => [
+    'name' => clienttranslate('prison'),
+    'count' => 2,
+    'is_building' => true
+  ],
+  $this->city_tile_type_ids['church'] => [
+    'name' => clienttranslate('church'),
+    'count' => 2,
+    'is_building' => true
+  ],
+];
 
 /*
 
