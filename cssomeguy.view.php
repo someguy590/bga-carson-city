@@ -37,9 +37,37 @@ class view_cssomeguy_cssomeguy extends game_view
   {
     // Get players & players number
     $players = $this->game->loadPlayersBasicInfos();
-    $players_nbr = count($players);
+    $player_count = count($players);
 
     /*********** Place your code below:  ************/
+    $turn_tracker_scale = 25;
+    $turn_tracker_offset = 12;
+    $turn_tracker_x_start = 79;
+
+    $current_turn_tracker_y_start = 33;
+    $x_px = $turn_tracker_x_start;
+    $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'current_turn_tracker');
+    for ($i = 1; $i <= $player_count; $i++) {
+      $this->page->insert_block('current_turn_tracker', [
+        'TRACKER_ID' => $i,
+        'LEFT' => $x_px,
+        'TOP' => $current_turn_tracker_y_start
+      ]);
+      $x_px += $turn_tracker_scale + $turn_tracker_offset;
+    }
+
+    $pass_turn_tracker_y_start = 71;
+    $x_px = $turn_tracker_x_start;
+    $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'pass_turn_tracker');
+    for ($i = 1; $i <= $player_count; $i++) {
+      $this->page->insert_block('pass_turn_tracker', [
+        'TRACKER_ID' => $i,
+        'LEFT' => $x_px,
+        'TOP' => $pass_turn_tracker_y_start
+      ]);
+      $x_px += $turn_tracker_scale + $turn_tracker_offset;
+    }
+
 
     $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'action_square');
     $building_construction_x_start = 234;

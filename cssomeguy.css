@@ -58,6 +58,12 @@
     height: 917px;
 }
 
+.turn_tracker {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+}
+
 .city_square {
     position: absolute;
     width: 74px;
