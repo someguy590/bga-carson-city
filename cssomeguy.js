@@ -87,6 +87,9 @@ define([
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
+                dojo.place(this.format_block('jstplRoundTrackerToken', {}), 'tiles');
+                this.placeOnObject('round_tracker_token', 'initial_round_tracker_position');
+
                 let buildingConstructionSquares = gamedatas.buildingConstructionSquares;
                 for (let buildingConstructionSquare of Object.values(buildingConstructionSquares)) {
                     dojo.place(this.format_block('jstplCityTile', {

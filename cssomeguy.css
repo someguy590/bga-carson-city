@@ -76,6 +76,14 @@
     height: 52px;
 }
 
+#initial_round_tracker_position {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    left: 549px;
+    top: 225px;
+}
+
 .city_tile {
     position: absolute;
     background-image: url('img/city_tiles.jpg');
@@ -193,6 +201,23 @@
     font-size: 25px;
 }
 
+
+.game_token {
+    position: absolute;
+    background-image: url('img/game_tokens.png');
+}
+
+.game_token.three_revolver_token {
+    width: 46px;
+    height: 46px;
+    background-position: 0px 0px;
+}
+
+.game_token.round_tracker_token {
+    width: 40px;
+    height: 40px;
+    background-position: -46px 0px;
+}
 
 .player_piece {
     position: absolute;
