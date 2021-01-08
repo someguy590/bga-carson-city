@@ -40,6 +40,13 @@ CREATE TABLE IF NOT EXISTS `roads` (
   PRIMARY KEY (`road_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `parcels` (
+  `parcel_id` int unsigned NOT NULL,
+  `owner_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`parcel_id`),
+  FOREIGN KEY (`owner_id`) REFERENCES player(`player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
 -- CREATE TABLE IF NOT EXISTS `card` (
