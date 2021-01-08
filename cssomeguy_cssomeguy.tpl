@@ -51,6 +51,15 @@
 
         <div id="tiles"></div>
     </div>
+    <div id="personalities">
+        <div id="personality_sheriff" class="personality personality_sheriff"></div>
+        <div id="personality_banker" class="personality personality_banker"></div>
+        <div id="personality_grocer" class="personality personality_grocer"></div>
+        <div id="personality_coolie" class="personality personality_coolie"></div>
+        <div id="personality_settler" class="personality personality_settler"></div>
+        <div id="personality_captain" class="personality personality_captain"></div>
+        <div id="personality_mercenary" class="personality personality_mercenary"></div>
+    </div>
 </div>
 
 
