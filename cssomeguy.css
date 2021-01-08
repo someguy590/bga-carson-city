@@ -247,3 +247,9 @@
     background-position: -72px 0px;
 }
 
+.parcel {
+    position: absolute;
+    background-image: url('img/parcel.png');
+    width: 70px;
+    height: 70px;
+}

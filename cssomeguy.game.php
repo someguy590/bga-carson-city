@@ -126,6 +126,10 @@ class cssomeguy extends Table
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
+
+        $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
+        $result['parcels'] = $this->getObjectListFromDB($sql);
+        
         $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
@@ -223,6 +227,13 @@ class cssomeguy extends Table
             $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
     }
 
+    function getCitySquareCoordinates($city_square_id): array
+    {
+        $x = $city_square_id % 8;
+        $y = intdiv($city_square_id, 8);
+        return [$x, $y];
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
@@ -231,6 +242,36 @@ class cssomeguy extends Table
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in cssomeguy.action.php)
     */
+
+    function initialParcelClaim($parcel_id)
+    {
+        $this->checkAction('initialParcelClaim');
+
+        $sql = "SELECT parcel_id FROM parcels WHERE parcel_id=$parcel_id";
+        $is_parcel_claimed = !is_null($this->getUniqueValueFromDB($sql));
+
+        if ($is_parcel_claimed)
+            throw new BgaUserException($this->_('Parcel already claimed'));
+
+        $player_id = $this->getActivePlayerId();
+
+        $sql = "UPDATE player SET property_tiles=property_tiles-1 WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $sql = "INSERT INTO parcels (parcel_id, owner_id) VALUES ($parcel_id, $player_id)";
+        $this->DbQuery($sql);
+
+        [$x, $y] = $this->getCitySquareCoordinates($parcel_id);
+
+        $this->notifyAllPlayers('parcelClaimed', clienttranslate('${player_name} claims parcel (${x}, ${y})'), [
+            'player_name' => $this->getActivePlayerName(),
+            'x' => $x,
+            'y' => $y,
+            'parcelId' => $parcel_id
+        ]);
+
+        $this->gamestate->nextState('parcelClaimed');
+    }
 
     /*
     
@@ -294,6 +335,13 @@ class cssomeguy extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
+
+    function stInitialParcelClaimed()
+    {
+        $player_id = $this->activeNextPlayer();
+        $this->giveExtraTime($player_id);
+        $this->gamestate->nextState('nextParcelClaim');
+    }
 
     /*
     
