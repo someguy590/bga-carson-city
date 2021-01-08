@@ -38,7 +38,16 @@ class action_cssomeguy extends APP_GameAction
   }
 
   // TODO: defines your action entry points there
+  public function initialParcelClaim()
+  {
+    $this->setAjaxMode();
 
+    $parcel_id = $this->getArg('parcelId', AT_int, true);
+
+    $this->game->initialParcelClaim($parcel_id);
+
+    $this->ajaxResponse();
+  }
 
   /*
     

@@ -99,6 +99,16 @@ define([
                     this.placeOnObject('city_tile_' + buildingConstructionSquare.id, 'action_square_' + buildingConstructionSquare.location_arg);
                 }
 
+                let parcels = gamedatas.parcels;
+                for (let { parcelId, ownerId } of parcels) {
+                    dojo.place(this.format_block('jstplParcel', {
+                        parcelId: parcelId,
+                        playerId: ownerId,
+                        color: this.gamedatas.players[ownerId].color
+                    }), 'tiles');
+                    this.placeOnObject(`parcel_${parcelId}_${ownerId}`, 'city_square_' + parcelId);
+                }
+
                 let cityTiles = gamedatas.cityTiles;
                 for (let cityTile of Object.values(cityTiles)) {
                     dojo.place(this.format_block('jstplCityTile', {
@@ -125,6 +135,9 @@ define([
                 console.log('Entering state: ' + stateName);
 
                 switch (stateName) {
+                    case 'initialParcelClaims':
+                        this.connectClass('city_square', 'onclick', 'onInitialParcelClaim');
+                        break;
 
                     /* Example:
                     
@@ -149,6 +162,9 @@ define([
                 console.log('Leaving state: ' + stateName);
 
                 switch (stateName) {
+                    case 'initialParcelClaims':
+                        this.disconnectAll();
+                        break;
 
                     /* Example:
                     
@@ -215,6 +231,20 @@ define([
             
             */
 
+            onInitialParcelClaim: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('initialParcelClaim'))
+                    return;
+
+                let parcelId = e.target.id.split('_')[2];
+
+                this.ajaxcall("/cssomeguy/cssomeguy/initialParcelClaim.html", {
+                    lock: true,
+                    parcelId: parcelId
+                }, this, function (result) { }, function (is_error) { });
+            },
+
             /* Example:
             
             onMyMethodToCall1: function( evt )
@@ -265,6 +295,8 @@ define([
             setupNotifications: function () {
                 console.log('notifications subscriptions setup');
 
+                dojo.subscribe('parcelClaimed', this, 'notifParcelClaimed');
+
                 // TODO: here, associate your game notifications with local methods
 
                 // Example 1: standard notification handling
@@ -279,6 +311,21 @@ define([
             },
 
             // TODO: from this point and below, you can write your game notifications handling methods
+            notifParcelClaimed: function (notif) {
+                let parcelId = notif.args.parcelId;
+                let playerId = this.getActivePlayerId();
+                dojo.place(this.format_block('jstplParcel', {
+                    parcelId: parcelId,
+                    playerId: playerId,
+                    color: this.gamedatas.players[playerId].color
+                }), 'tiles');
+
+                let parcelDivId = `parcel_${parcelId}_${playerId}`;
+                this.placeOnObject(parcelDivId, 'overall_player_board_' + playerId);
+                this.slideToObject(parcelDivId, 'city_square_' + parcelId).play();
+
+                this.counters[playerId].propertyTiles.incValue(-1);
+            },
 
             /*
             Example:

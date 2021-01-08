@@ -33,14 +33,9 @@ class cssomeguy extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
 
-        self::initGameStateLabels(array(
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ));
+        $this->initGameStateLabels([
+            'isNextInitialParcelClaimClockwise' => 10
+        ]);
 
         $this->city_tiles_deck = self::getNew("module.common.deck");
         $this->city_tiles_deck->init('city_tiles');
@@ -83,7 +78,7 @@ class cssomeguy extends Table
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        $this->setGameStateInitialValue('isNextInitialParcelClaimClockwise', 1);
 
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -126,6 +121,10 @@ class cssomeguy extends Table
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
+
+        $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
+        $result['parcels'] = $this->getObjectListFromDB($sql);
+
         $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
@@ -223,6 +222,13 @@ class cssomeguy extends Table
             $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
     }
 
+    function getCitySquareCoordinates($city_square_id): array
+    {
+        $x = $city_square_id % 8;
+        $y = intdiv($city_square_id, 8);
+        return [$x, $y];
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
@@ -231,6 +237,36 @@ class cssomeguy extends Table
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in cssomeguy.action.php)
     */
+
+    function initialParcelClaim($parcel_id)
+    {
+        $this->checkAction('initialParcelClaim');
+
+        $sql = "SELECT parcel_id FROM parcels WHERE parcel_id=$parcel_id";
+        $is_parcel_claimed = !is_null($this->getUniqueValueFromDB($sql));
+
+        if ($is_parcel_claimed)
+            throw new BgaUserException($this->_('Parcel already claimed'));
+
+        $player_id = $this->getActivePlayerId();
+
+        $sql = "UPDATE player SET property_tiles=property_tiles-1 WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $sql = "INSERT INTO parcels (parcel_id, owner_id) VALUES ($parcel_id, $player_id)";
+        $this->DbQuery($sql);
+
+        [$x, $y] = $this->getCitySquareCoordinates($parcel_id);
+
+        $this->notifyAllPlayers('parcelClaimed', clienttranslate('${player_name} claims parcel (${x}, ${y})'), [
+            'player_name' => $this->getActivePlayerName(),
+            'x' => $x,
+            'y' => $y,
+            'parcelId' => $parcel_id
+        ]);
+
+        $this->gamestate->nextState('parcelClaimed');
+    }
 
     /*
     
@@ -294,6 +330,38 @@ class cssomeguy extends Table
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
+
+    function stInitialParcelClaimed()
+    {
+        $first_player_id = $this->getNextPlayerTable()[0];
+        $sql = "SELECT property_tiles FROM player WHERE player_id=$first_player_id";
+        if ($this->getUniqueValueFromDB($sql) == 10) {
+            $this->gamestate->nextState('choosePersonality');
+            return;
+        }
+
+        $prev_player_id = $this->getActivePlayerId();
+        $last_player_no = $this->getPlayersNumber();
+        $sql = "SELECT player_id FROM player WHERE player_no=$last_player_no";
+        $last_player_id = $this->getUniqueValueFromDB($sql);
+
+        $is_next_initial_parcel_claim_clockwise = 1 == $this->getGameStateValue('isNextInitialParcelClaimClockwise');
+
+        // last player gets to place his 2nd parcel right after his first
+        if ($prev_player_id == $last_player_id && $is_next_initial_parcel_claim_clockwise) {
+            $this->setGameStateValue('isNextInitialParcelClaimClockwise', 0);
+            $this->giveExtraTime($prev_player_id);
+            $this->gamestate->nextState('nextParcelClaim');
+            return;
+        }
+
+        if ($is_next_initial_parcel_claim_clockwise)
+            $next_player_id = $this->activeNextPlayer();
+        else
+            $next_player_id = $this->activePrevPlayer();
+        $this->giveExtraTime($next_player_id);
+        $this->gamestate->nextState('nextParcelClaim');
+    }
 
     /*
     

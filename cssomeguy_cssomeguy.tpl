@@ -63,6 +63,8 @@ var jstplRoundTrackerToken = '<div id="round_tracker_token" class="game_token ro
 
 var jstplCityTile = '<div class="city_tile city_tile_${cityTileTypeId}" id="city_tile_${cityTileId}"></div>';
 
+var jstplParcel = '<div id="parcel_${parcelId}_${playerId}" class="parcel" style="background-color: #${color}"></div>';
+
 var jstplPlayerBoard = '\
     <div class="cp_board">\
         <div class="counter_icon cowboy_icon"></div><span id="cowboy_count_${playerId}" class="resource_counter"></span>\
