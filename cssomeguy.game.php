@@ -33,14 +33,9 @@ class cssomeguy extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
 
-        self::initGameStateLabels(array(
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
-            //      ...
-        ));
+        $this->initGameStateLabels([
+            'isNextInitialParcelClaimClockwise' => 10
+        ]);
 
         $this->city_tiles_deck = self::getNew("module.common.deck");
         $this->city_tiles_deck->init('city_tiles');
@@ -83,7 +78,7 @@ class cssomeguy extends Table
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        $this->setGameStateInitialValue('isNextInitialParcelClaimClockwise', 1);
 
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -129,7 +124,7 @@ class cssomeguy extends Table
 
         $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
         $result['parcels'] = $this->getObjectListFromDB($sql);
-        
+
         $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
         return $result;
@@ -338,8 +333,33 @@ class cssomeguy extends Table
 
     function stInitialParcelClaimed()
     {
-        $player_id = $this->activeNextPlayer();
-        $this->giveExtraTime($player_id);
+        $first_player_id = $this->getNextPlayerTable()[0];
+        $sql = "SELECT property_tiles FROM player WHERE player_id=$first_player_id";
+        if ($this->getUniqueValueFromDB($sql) == 10) {
+            $this->gamestate->nextState('choosePersonality');
+            return;
+        }
+
+        $prev_player_id = $this->getActivePlayerId();
+        $last_player_no = $this->getPlayersNumber();
+        $sql = "SELECT player_id FROM player WHERE player_no=$last_player_no";
+        $last_player_id = $this->getUniqueValueFromDB($sql);
+
+        $is_next_initial_parcel_claim_clockwise = 1 == $this->getGameStateValue('isNextInitialParcelClaimClockwise');
+
+        // last player gets to place his 2nd parcel right after his first
+        if ($prev_player_id == $last_player_id && $is_next_initial_parcel_claim_clockwise) {
+            $this->setGameStateValue('isNextInitialParcelClaimClockwise', 0);
+            $this->giveExtraTime($prev_player_id);
+            $this->gamestate->nextState('nextParcelClaim');
+            return;
+        }
+
+        if ($is_next_initial_parcel_claim_clockwise)
+            $next_player_id = $this->activeNextPlayer();
+        else
+            $next_player_id = $this->activePrevPlayer();
+        $this->giveExtraTime($next_player_id);
         $this->gamestate->nextState('nextParcelClaim');
     }
 
