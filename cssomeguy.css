@@ -45,6 +45,7 @@
 /* Note: you must not use any @import directive */
 
 /********* You can start writing your CSS below this line: **********/
+
 #carson_city_play_area {
     display: flex;
     flex-direction: column;
@@ -68,6 +69,7 @@
     position: absolute;
     width: 74px;
     height: 75px;
+    z-index: 4;
 }
 
 .building_construction_square {
@@ -89,6 +91,7 @@
     background-image: url('img/city_tiles.jpg');
     width: 52px;
     height: 52px;
+    z-index: 1;
 }
 
 .city_tile_0 {
@@ -133,6 +136,7 @@
 
 .road_space {
     position: absolute;
+    z-index: 2;
 }
 
 .horizontal_road_space {
@@ -200,7 +204,6 @@
     font-size: 25px;
 }
 
-
 .game_token {
     position: absolute;
     background-image: url('img/game_tokens.png');
@@ -224,7 +227,8 @@
 }
 
 .player_piece.peg {
-    width: 18px; height: 23px;
+    width: 18px;
+    height: 23px;
 }
 
 .player_piece.peg.peg_0000ff {
@@ -235,7 +239,7 @@
     background-position: -18px 0px;
 }
 
-.player_piece.peg.peg_f07f16  {
+.player_piece.peg.peg_f07f16 {
     background-position: -36px 0px;
 }
 
@@ -252,4 +256,5 @@
     background-image: url('img/parcel.png');
     width: 70px;
     height: 70px;
+    z-index: 0;
 }
