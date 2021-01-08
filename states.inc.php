@@ -52,9 +52,10 @@
 
 if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, since it is included multiple times
     define('INITIAL_PARCEL_CLAIMS', 2);
-    define('CHOOSE_PERSONALITY', 3);
-    define('UPDATE_TURN_ORDER', 4);
-    define('PLACE_COWBOY', 5);
+    define('INITIAL_PARCEL_CLAIMED', 3);
+    define('CHOOSE_PERSONALITY', 4);
+    define('UPDATE_TURN_ORDER', 5);
+    define('PLACE_COWBOY', 6);
     define('STATE_END_GAME', 99);
 }
 
@@ -75,8 +76,17 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must claim a parcel of land, it can include a mountain or the center of Carson City'),
         "descriptionmyturn" => clienttranslate('${you} must claim a parcel of land, it can include a mountain or the center of Carson City'),
         'type' => 'activeplayer',
-        'possibleactions' => ['claimParcel'],
-        'transitions' => ['choosePersonality' => CHOOSE_PERSONALITY]
+        'possibleactions' => ['initialParcelClaim'],
+        'transitions' => ['parcelClaimed' => INITIAL_PARCEL_CLAIMED]
+    ],
+
+    INITIAL_PARCEL_CLAIMED => [
+        'name' => 'initialParcelClaimed',
+        "description" => '',
+        "descriptionmyturn" => '',
+        'type' => 'game',
+        'action' => 'stInitialParcelClaimed',
+        'transitions' => ['nextParcelClaim' => INITIAL_PARCEL_CLAIMS, 'choosePersonality' => CHOOSE_PERSONALITY]
     ],
 
     CHOOSE_PERSONALITY => [
