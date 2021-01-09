@@ -139,6 +139,12 @@ define([
                         this.connectClass('city_square', 'onclick', 'onInitialParcelClaim');
                         break;
 
+                    case 'choosePersonality':
+                        dojo.style('board', 'order', 1);
+                        dojo.style('personalities', 'order', 0);
+                        this.connectClass('personality', 'onclick', 'onChoosePersonality');
+                        break;
+
                     /* Example:
                     
                     case 'myGameState':
