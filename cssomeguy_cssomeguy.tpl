@@ -26,6 +26,15 @@
 -->
 
 <div id="carson_city_play_area">
+    <div id="personalities">
+        <div id="personality_1" class="personality personality_sheriff"></div>
+        <div id="personality_2" class="personality personality_banker"></div>
+        <div id="personality_3" class="personality personality_grocer"></div>
+        <div id="personality_4" class="personality personality_coolie"></div>
+        <div id="personality_5" class="personality personality_settler"></div>
+        <div id="personality_6" class="personality personality_captain"></div>
+        <div id="personality_7" class="personality personality_mercenary"></div>
+    </div>
     <div id="board">
         <!-- BEGIN current_turn_tracker -->
         <div id="current_turn_tracker_{TRACKER_ID}" class="turn_tracker" style="left: {LEFT}px; top: {TOP}px;"></div>
@@ -48,18 +57,8 @@
         <!-- BEGIN road -->
         <div id="road_{ROAD_ID}" class="road_space {ROAD_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
         <!-- END road -->
-
-        <div id="tiles"></div>
     </div>
-    <div id="personalities">
-        <div id="personality_sheriff" class="personality personality_sheriff"></div>
-        <div id="personality_banker" class="personality personality_banker"></div>
-        <div id="personality_grocer" class="personality personality_grocer"></div>
-        <div id="personality_coolie" class="personality personality_coolie"></div>
-        <div id="personality_settler" class="personality personality_settler"></div>
-        <div id="personality_captain" class="personality personality_captain"></div>
-        <div id="personality_mercenary" class="personality personality_mercenary"></div>
-    </div>
+    <div id="tiles"></div>
 </div>
 
 

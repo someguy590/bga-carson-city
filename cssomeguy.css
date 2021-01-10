@@ -57,13 +57,11 @@
     position: relative;
     width: 700px;
     height: 917px;
-    order: 0;
 }
 
 #personalities {
     display: flex;
     flex-direction: row;
-    order: 1;
 }
 
 .personality {
