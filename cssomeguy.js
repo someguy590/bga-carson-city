@@ -52,7 +52,7 @@ define([
                 this.counters = {};
                 for (let [playerId, player] of Object.entries(gamedatas.players)) {
                     dojo.place(this.format_block('jstplPeg', {
-                        turnOrder: player.turnOrder,
+                        pegId: `current_turn_tracker_${player.turnOrder}`,
                         playerId: playerId,
                         color: player.color
                     }), 'tiles');
