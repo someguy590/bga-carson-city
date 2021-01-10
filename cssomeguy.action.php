@@ -43,8 +43,17 @@ class action_cssomeguy extends APP_GameAction
     $this->setAjaxMode();
 
     $parcel_id = $this->getArg('parcelId', AT_int, true);
-
     $this->game->initialParcelClaim($parcel_id);
+
+    $this->ajaxResponse();
+  }
+
+  public function choosePersonality()
+  {
+    $this->setAjaxMode();
+
+    $personality_id = $this->getArg('personalityId', AT_int, true);
+    $this->game->choosePersonality($personality_id);
 
     $this->ajaxResponse();
   }

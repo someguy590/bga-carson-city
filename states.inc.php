@@ -54,7 +54,7 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define('INITIAL_PARCEL_CLAIMS', 2);
     define('INITIAL_PARCEL_CLAIMED', 3);
     define('CHOOSE_PERSONALITY', 4);
-    define('UPDATE_TURN_ORDER', 5);
+    define('PERSONALITY_CHOSEN', 5);
     define('PLACE_COWBOY', 6);
     define('STATE_END_GAME', 99);
 }
@@ -73,8 +73,8 @@ $machinestates = array(
 
     INITIAL_PARCEL_CLAIMS => [
         'name' => 'initialParcelClaims',
-        "description" => clienttranslate('${actplayer} must claim a parcel of land, it can include a mountain or the center of Carson City'),
-        "descriptionmyturn" => clienttranslate('${you} must claim a parcel of land, it can include a mountain or the center of Carson City'),
+        'description' => clienttranslate('${actplayer} must claim a parcel of land, it can include a mountain or the center of Carson City'),
+        'descriptionmyturn' => clienttranslate('${you} must claim a parcel of land, it can include a mountain or the center of Carson City'),
         'type' => 'activeplayer',
         'possibleactions' => ['initialParcelClaim'],
         'transitions' => ['parcelClaimed' => INITIAL_PARCEL_CLAIMED]
@@ -82,8 +82,8 @@ $machinestates = array(
 
     INITIAL_PARCEL_CLAIMED => [
         'name' => 'initialParcelClaimed',
-        "description" => '',
-        "descriptionmyturn" => '',
+        'description' => '',
+        'descriptionmyturn' => '',
         'type' => 'game',
         'action' => 'stInitialParcelClaimed',
         'transitions' => ['nextParcelClaim' => INITIAL_PARCEL_CLAIMS, 'choosePersonality' => CHOOSE_PERSONALITY]
@@ -91,24 +91,26 @@ $machinestates = array(
 
     CHOOSE_PERSONALITY => [
         'name' => 'choosePersonality',
-        "description" => clienttranslate('${actplayer} must choose a personality'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a personality'),
+        'description' => clienttranslate('${actplayer} must choose a personality'),
+        'descriptionmyturn' => clienttranslate('${you} must choose a personality'),
         'type' => 'activeplayer',
         'possibleactions' => ['choosePersonality'],
-        'transitions' => ['choosePersonality' => CHOOSE_PERSONALITY, 'updateTurnOrder' => UPDATE_TURN_ORDER]
+        'transitions' => ['personalityChosen' => PERSONALITY_CHOSEN]
     ],
 
-    UPDATE_TURN_ORDER => [
-        'name' => 'updateTurnOrder',
+    PERSONALITY_CHOSEN => [
+        'name' => 'personalityChosen',
+        'description' => '',
+        'descriptionmyturn' => '',
         'type' => 'game',
-        'action' => 'stUpdateTurnOrder',
-        'transitions' => ['placeCowboy' => PLACE_COWBOY]
+        'action' => 'stPersonalityChosen',
+        'transitions' => ['nextPersonalityChoice' => CHOOSE_PERSONALITY, 'placeCowboy' => PLACE_COWBOY]
     ],
     
     PLACE_COWBOY => [
         'name' => 'placeCowboy',
-        "description" => clienttranslate('${actplayer} must place a cowboy or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must place a cowboy or pass'),
+        'description' => clienttranslate('${actplayer} must place a cowboy or pass'),
+        'descriptionmyturn' => clienttranslate('${you} must place a cowboy or pass'),
         'type' => 'activeplayer',
         'possibleactions' => ['placeCowboy', 'pass'],
         'transitions' => ['placeCowboy' => PLACE_COWBOY]

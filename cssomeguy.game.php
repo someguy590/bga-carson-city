@@ -113,7 +113,7 @@ class cssomeguy extends Table
         $data = [];
 
         // Get information about players
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player";
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality FROM player";
         $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
@@ -265,6 +265,26 @@ class cssomeguy extends Table
         $this->gamestate->nextState('parcelClaimed');
     }
 
+    function choosePersonality($personality_id)
+    {
+        $sql = "SELECT personality FROM player WHERE personality=$personality_id";
+        $is_personality_chosen = !is_null($this->getUniqueValueFromDB($sql));
+
+        if ($is_personality_chosen)
+            throw new BgaUserException($this->_('Personality already claimed'));
+
+        $player_id = $this->getActivePlayerId();
+        $sql = "UPDATE player SET personality=$personality_id WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
+            'player_name' => $this->getActivePlayerName(),
+            'personality' => $this->personalities[$personality_id]['name'],
+            'personalityId' => $personality_id
+        ]);
+        $this->gamestate->nextState('personalityChosen');
+    }
+
     /*
     
     Example:
@@ -358,6 +378,39 @@ class cssomeguy extends Table
             $next_player_id = $this->activePrevPlayer();
         $this->giveExtraTime($next_player_id);
         $this->gamestate->nextState('nextParcelClaim');
+    }
+
+    function stPersonalityChosen()
+    {
+        // determine next player to choose personality
+        $sql = "SELECT player_id FROM player WHERE personality IS NULL ORDER BY turn_order ASC LIMIT 1";
+        $player_id = $this->getUniqueValueFromDB($sql);
+
+        // all players picked a personality
+        if (is_null($player_id)) {
+            $sql = "SET @new_turn_order=0";
+            $this->DbQuery($sql);
+
+            $sql =
+            "UPDATE player
+            INNER JOIN 
+            (SELECT (@new_turn_order:=@new_turn_order+1) AS new_turn_order, player_id FROM player ORDER BY personality ASC) new_turn_orders
+            ON player.player_id = new_turn_orders.player_id
+            SET turn_order=new_turn_order";
+            $this->DbQuery($sql);
+
+            $sql = "SELECT player_id FROM player WHERE turn_order=1";
+            $first_player_id = $this->getUniqueValueFromDB($sql);
+
+            $this->gamestate->changeActivePlayer($first_player_id);
+            $this->giveExtraTime($first_player_id);
+            $this->gamestate->nextState('placeCowboy');
+            return;
+        }
+
+        $this->gamestate->changeActivePlayer($player_id);
+        $this->giveExtraTime($player_id);
+        $this->gamestate->nextState('nextPersonalityChoice');
     }
 
     /*

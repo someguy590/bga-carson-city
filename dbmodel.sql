@@ -25,6 +25,7 @@ ALTER TABLE `player` ADD `revolver_tokens` INT UNSIGNED NOT NULL DEFAULT '1';
 ALTER TABLE `player` ADD `roads` INT UNSIGNED NOT NULL DEFAULT '1';
 ALTER TABLE `player` ADD `property_tiles` INT UNSIGNED NOT NULL DEFAULT '12';
 ALTER TABLE `player` ADD `turn_order` INT UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD `personality` INT UNSIGNED;
 
 CREATE TABLE IF NOT EXISTS `city_tiles` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,

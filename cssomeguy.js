@@ -51,12 +51,23 @@ define([
                 dojo.query('.fa.fa-star').removeClass('fa fa-star').addClass('counter_icon vp_icon');
                 this.counters = {};
                 for (let [playerId, player] of Object.entries(gamedatas.players)) {
+                    let turnTrackerPegId = `current_turn_tracker_${player.turnOrder}`;
                     dojo.place(this.format_block('jstplPeg', {
-                        pegId: `current_turn_tracker_${player.turnOrder}`,
+                        pegId: turnTrackerPegId,
                         playerId: playerId,
                         color: player.color
                     }), 'tiles');
-                    this.placeOnObject(`peg_${player.turnOrder}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+                    this.placeOnObject(`peg_${turnTrackerPegId}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+
+                    if (player.personality != null) {
+                        let personalityPegId = `personality_${player.personality}`;
+                        dojo.place(this.format_block('jstplPeg', {
+                            pegId: personalityPegId,
+                            playerId: playerId,
+                            color: player.color
+                        }), 'tiles');
+                        this.placeOnObject(`peg_${personalityPegId}_${playerId}`, 'personality_' + player.personality);
+                    }
 
                     // TODO: Setting up players boards if needed
                     let playerBoardDiv = $('player_board_' + playerId);
@@ -169,6 +180,9 @@ define([
                     case 'initialParcelClaims':
                         this.disconnectAll();
                         break;
+                    case 'choosePersonality':
+                        this.disconnectAll();
+                        break;
 
                     /* Example:
                     
@@ -249,6 +263,20 @@ define([
                 }, this, function (result) { }, function (is_error) { });
             },
 
+            onChoosePersonality: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('choosePersonality'))
+                    return;
+
+                let personalityId = e.target.id.split('_')[1];
+
+                this.ajaxcall("/cssomeguy/cssomeguy/choosePersonality.html", {
+                    lock: true,
+                    personalityId: personalityId
+                }, this, function (result) { }, function (is_error) { });
+            },
+
             /* Example:
             
             onMyMethodToCall1: function( evt )
@@ -300,6 +328,7 @@ define([
                 console.log('notifications subscriptions setup');
 
                 dojo.subscribe('parcelClaimed', this, 'notifParcelClaimed');
+                dojo.subscribe('personalityChosen', this, 'notifPersonalityChosen');
 
                 // TODO: here, associate your game notifications with local methods
 
@@ -329,6 +358,22 @@ define([
                 this.slideToObject(parcelDivId, 'city_square_' + parcelId).play();
 
                 this.counters[playerId].propertyTiles.incValue(-1);
+            },
+
+            notifPersonalityChosen: function (notif) {
+                let playerId = this.getActivePlayerId();
+                let personalityId = notif.args.personalityId;
+
+                let pegId = `personality_${personalityId}`
+                dojo.place(this.format_block('jstplPeg', {
+                    pegId: pegId,
+                    playerId: playerId,
+                    color: this.gamedatas.players[playerId].color
+                }), 'tiles');
+
+                let pegDivId = `peg_${pegId}_${playerId}`;
+                this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
+                this.slideToObject(pegDivId, 'personality_' + personalityId).play();
             },
 
             /*
