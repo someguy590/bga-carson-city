@@ -110,24 +110,21 @@ class cssomeguy extends Table
     */
     protected function getAllDatas()
     {
-        $result = array();
-
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $data = [];
 
         // Get information about players
-        // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player ";
-        $result['players'] = self::getCollectionFromDb($sql);
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player";
+        $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
+        $data['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
 
         $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
-        $result['parcels'] = $this->getObjectListFromDB($sql);
+        $data['parcels'] = $this->getObjectListFromDB($sql);
 
-        $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
+        $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
-        return $result;
+        return $data;
     }
 
     /*
