@@ -226,6 +226,19 @@ class cssomeguy extends Table
         return [$x, $y];
     }
 
+    /**
+     * Handles notification and state transition of player choosing a personality
+     */
+    function finishChoosePersonality($personality_id)
+    {
+        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
+            'player_name' => $this->getActivePlayerName(),
+            'personality' => $this->personalities[$personality_id]['name'],
+            'personalityId' => $personality_id
+        ]);
+        $this->gamestate->nextState('personalityChosen');
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
@@ -277,12 +290,7 @@ class cssomeguy extends Table
         $sql = "UPDATE player SET personality=$personality_id WHERE player_id=$player_id";
         $this->DbQuery($sql);
 
-        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
-            'player_name' => $this->getActivePlayerName(),
-            'personality' => $this->personalities[$personality_id]['name'],
-            'personalityId' => $personality_id
-        ]);
-        $this->gamestate->nextState('personalityChosen');
+        $this->finishChoosePersonality($personality_id);
     }
 
     /*
