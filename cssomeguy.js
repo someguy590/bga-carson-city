@@ -51,22 +51,20 @@ define([
                 dojo.query('.fa.fa-star').removeClass('fa fa-star').addClass('counter_icon vp_icon');
                 this.counters = {};
                 for (let [playerId, player] of Object.entries(gamedatas.players)) {
-                    let turnTrackerPegId = `current_turn_tracker_${player.turnOrder}`;
                     dojo.place(this.format_block('jstplPeg', {
-                        pegId: turnTrackerPegId,
+                        pegType: 'turn_tracker',
                         playerId: playerId,
                         color: player.color
                     }), 'tiles');
-                    this.placeOnObject(`peg_${turnTrackerPegId}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+                    this.placeOnObject(`peg_turn_tracker_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
 
                     if (player.personality != null) {
-                        let personalityPegId = `personality_${player.personality}`;
                         dojo.place(this.format_block('jstplPeg', {
-                            pegId: personalityPegId,
+                            pegType: 'personality',
                             playerId: playerId,
                             color: player.color
                         }), 'tiles');
-                        this.placeOnObject(`peg_${personalityPegId}_${playerId}`, 'personality_' + player.personality);
+                        this.placeOnObject(`peg_personality_${playerId}`, 'personality_' + player.personality);
                     }
 
                     // TODO: Setting up players boards if needed
@@ -364,14 +362,13 @@ define([
                 let playerId = this.getActivePlayerId();
                 let personalityId = notif.args.personalityId;
 
-                let pegId = `personality_${personalityId}`
                 dojo.place(this.format_block('jstplPeg', {
-                    pegId: pegId,
+                    pegType: 'personality',
                     playerId: playerId,
                     color: this.gamedatas.players[playerId].color
                 }), 'tiles');
 
-                let pegDivId = `peg_${pegId}_${playerId}`;
+                let pegDivId = `peg_personality_${playerId}`;
                 this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
                 this.slideToObject(pegDivId, 'personality_' + personalityId).play();
             },

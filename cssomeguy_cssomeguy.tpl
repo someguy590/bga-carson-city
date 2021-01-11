@@ -65,7 +65,7 @@
 <script type="text/javascript">
 
 // Javascript HTML templates
-var jstplPeg = '<div id="peg_${pegId}_${playerId}" class="player_piece peg peg_${color}"></div>';
+var jstplPeg = '<div id="peg_${pegType}_${playerId}" class="player_piece peg peg_${color}"></div>';
 
 var jstplRoundTrackerToken = '<div id="round_tracker_token" class="game_token round_tracker_token"></div>';
 
