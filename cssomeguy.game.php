@@ -399,6 +399,12 @@ class cssomeguy extends Table
             SET turn_order=new_turn_order";
             $this->DbQuery($sql);
 
+            $sql = "SELECT turn_order, player_id FROM player";
+            $new_turn_order = $this->getCollectionFromDB($sql, true);
+            $this->notifyAllPlayers('allPersonalitesChosen', '', [
+                'newTurnOrder' => $new_turn_order
+            ]);
+
             $sql = "SELECT player_id FROM player WHERE turn_order=1";
             $first_player_id = $this->getUniqueValueFromDB($sql);
 

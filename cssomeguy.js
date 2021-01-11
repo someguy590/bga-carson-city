@@ -327,6 +327,7 @@ define([
 
                 dojo.subscribe('parcelClaimed', this, 'notifParcelClaimed');
                 dojo.subscribe('personalityChosen', this, 'notifPersonalityChosen');
+                dojo.subscribe('allPersonalitesChosen', this, 'notifResetCurrentTurnTracker');
 
                 // TODO: here, associate your game notifications with local methods
 
@@ -371,6 +372,12 @@ define([
                 let pegDivId = `peg_personality_${playerId}`;
                 this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
                 this.slideToObject(pegDivId, 'personality_' + personalityId).play();
+            },
+
+            notifResetCurrentTurnTracker: function (notif) {
+                let newTurnOrder = notif.args.newTurnOrder;
+                for (let i = 1; i <= this.gamedatas.playerorder.length; i++)
+                    this.slideToObject(`peg_turn_tracker_${newTurnOrder[i]}`, 'current_turn_tracker_' + i).play();
             },
 
             /*
