@@ -226,20 +226,6 @@ class cssomeguy extends Table
         return [$x, $y];
     }
 
-    /**
-     * Handles notification and state transition of player choosing a personality
-     */
-    function finishChoosePersonality($personality_id, $resources_changed)
-    {
-        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
-            'player_name' => $this->getActivePlayerName(),
-            'personality' => $this->personalities[$personality_id]['name'],
-            'personalityId' => $personality_id,
-            'resourcesChanged' => $resources_changed
-        ]);
-        $this->gamestate->nextState('personalityChosen');
-    }
-
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
@@ -296,22 +282,29 @@ class cssomeguy extends Table
             $sql .=  ",money=money+9";
             $resources_changed['money'] = 9;
         }
-        else if ($personality_id == $this->personality_ids['grocer']) {
-            
-        }
         else if ($personality_id == $this->personality_ids['coolie']) {
             $sql .=  ",roads=roads+2";
             $resources_changed['roads'] = 2;
+        }
+        $sql .= " WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+        
+        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
+            'player_name' => $this->getActivePlayerName(),
+            'personality' => $this->personalities[$personality_id]['name'],
+            'personalityId' => $personality_id,
+            'resourcesChanged' => $resources_changed
+        ]);
+        
+        if ($personality_id == $this->personality_ids['grocer']) {
         }
         else if ($personality_id == $this->personality_ids['settler']) {
             
         }
         else if ($personality_id == $this->personality_ids['captain']) {
         }
-        $sql .= " WHERE player_id=$player_id";
-        $this->DbQuery($sql);
 
-        $this->finishChoosePersonality($personality_id, $resources_changed);
+        $this->gamestate->nextState('personalityChosen');
     }
 
     /*
