@@ -235,9 +235,9 @@ class cssomeguy extends Table
         (note: each method below must match an input method in cssomeguy.action.php)
     */
 
-    function initialParcelClaim($parcel_id)
+    function claimParcel($parcel_id)
     {
-        $this->checkAction('initialParcelClaim');
+        $this->checkAction('claimParcel');
 
         $sql = "SELECT parcel_id FROM parcels WHERE parcel_id=$parcel_id";
         $is_parcel_claimed = !is_null($this->getUniqueValueFromDB($sql));

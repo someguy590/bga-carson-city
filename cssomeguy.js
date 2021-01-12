@@ -145,7 +145,7 @@ define([
 
                 switch (stateName) {
                     case 'initialParcelClaims':
-                        this.connectClass('city_square', 'onclick', 'onInitialParcelClaim');
+                        this.connectClass('city_square', 'onclick', 'onClaimParcel');
                         break;
 
                     case 'choosePersonality':
@@ -269,15 +269,15 @@ define([
             
             */
 
-            onInitialParcelClaim: function (e) {
+            onClaimParcel: function (e) {
                 // Preventing default browser reaction
                 dojo.stopEvent(e);
-                if (!this.checkAction('initialParcelClaim'))
+                if (!this.checkAction('claimParcel'))
                     return;
 
                 let parcelId = e.target.id.split('_')[2];
 
-                this.ajaxcall("/cssomeguy/cssomeguy/initialParcelClaim.html", {
+                this.ajaxcall("/cssomeguy/cssomeguy/claimParcel.html", {
                     lock: true,
                     parcelId: parcelId
                 }, this, function (result) { }, function (is_error) { });

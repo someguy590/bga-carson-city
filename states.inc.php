@@ -79,7 +79,7 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} must claim a parcel of land, it can include a mountain or the center of Carson City'),
         'descriptionmyturn' => clienttranslate('${you} must claim a parcel of land, it can include a mountain or the center of Carson City'),
         'type' => 'activeplayer',
-        'possibleactions' => ['initialParcelClaim'],
+        'possibleactions' => ['claimParcel'],
         'transitions' => ['parcelClaimed' => INITIAL_PARCEL_CLAIMED]
     ],
 
