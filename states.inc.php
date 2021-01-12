@@ -56,6 +56,8 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define('CHOOSE_PERSONALITY', 4);
     define('PERSONALITY_CHOSEN', 5);
     define('PLACE_COWBOY', 6);
+
+    define('GROCER_CHOSEN', 7);
     define('STATE_END_GAME', 99);
 }
 
@@ -95,7 +97,9 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} must choose a personality'),
         'type' => 'activeplayer',
         'possibleactions' => ['choosePersonality'],
-        'transitions' => ['personalityChosen' => PERSONALITY_CHOSEN]
+        'transitions' => [
+            'personalityChosen' => PERSONALITY_CHOSEN,
+            'grocerChosen' => GROCER_CHOSEN,
     ],
 
     PERSONALITY_CHOSEN => [
@@ -106,7 +110,17 @@ $machinestates = array(
         'action' => 'stPersonalityChosen',
         'transitions' => ['nextPersonalityChoice' => CHOOSE_PERSONALITY, 'placeCowboy' => PLACE_COWBOY]
     ],
-    
+
+    GROCER_CHOSEN => [
+        'name' => 'grocerChosen',
+        'description' => clienttranslate('${actplayer} must choose a benefit from ${personality_name}'),
+        'descriptionmyturn' => '', // will have buttons to describe options
+        'type' => 'activeplayer',
+        'args' => 'argGrocerChosen',
+        'possibleactions' => ['chooseGrocerBenefit'],
+        'transitions' => ['personalityChosen' => PERSONALITY_CHOSEN]
+    ],
+
     PLACE_COWBOY => [
         'name' => 'placeCowboy',
         'description' => clienttranslate('${actplayer} must place a cowboy or pass'),

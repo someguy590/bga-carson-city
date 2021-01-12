@@ -297,12 +297,41 @@ class cssomeguy extends Table
         ]);
         
         if ($personality_id == $this->personality_ids['grocer']) {
+            $this->gamestate->nextState('grocerChosen');
+            return;
         }
         else if ($personality_id == $this->personality_ids['settler']) {
             
         }
         else if ($personality_id == $this->personality_ids['captain']) {
         }
+
+        $this->gamestate->nextState('personalityChosen');
+    }
+
+    function chooseGrocerBenefit($is_receiving_money)
+    {
+        $this->checkAction('chooseGrocerBenefit');
+
+        $player_id = $this->getActivePlayerId();
+        if ($is_receiving_money) {
+            $sql = "UPDATE player SET money=money+8, is_using_personality_benefit=true WHERE player_id=$player_id";
+            $this->DbQuery($sql);
+            
+            $notification_type = 'updateResources';
+            $msg = clienttranslate('${player_name} receives $8');
+            $resources_changed['money'] = 8;
+        }
+        else {
+            $notification_type = 'log';
+            $msg = clienttranslate('${player_name} decides to later receive $8 or receive double income from 1 building type during the building income phase');
+            $resources_changed = [];
+        }
+
+        $this->notifyAllPlayers($notification_type, $msg, [
+            'player_name' => $this->getActivePlayerName(),
+            'resourcesChanged' => $resources_changed
+        ]);
 
         $this->gamestate->nextState('personalityChosen');
     }
@@ -343,6 +372,13 @@ class cssomeguy extends Table
         These methods function is to return some additional information that is specific to the current
         game state.
     */
+
+    function argGrocerChosen()
+    {
+        return [
+            'personality_name' => $this->personalities[$this->personality_ids['grocer']]['name']
+        ];
+    }
 
     /*
     

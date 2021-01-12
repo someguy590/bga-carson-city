@@ -206,6 +206,10 @@ define([
 
                 if (this.isCurrentPlayerActive()) {
                     switch (stateName) {
+                        case 'grocerChosen':
+                            this.addActionButton('money', _('Receive $8'), 'onChooseGrocerBenefit');
+                            this.addActionButton('income', _('Decide later to receive $8 or double your income from 1 building type'), 'onChooseGrocerBenefit');
+                            break;
                         /*               
                                          Example:
                          
@@ -275,6 +279,19 @@ define([
                 }, this, function (result) { }, function (is_error) { });
             },
 
+            onChooseGrocerBenefit: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('chooseGrocerBenefit'))
+                    return;
+
+                let isReceivingMoney = e.target.id == 'money';
+                this.ajaxcall("/cssomeguy/cssomeguy/chooseGrocerBenefit.html", {
+                    lock: true,
+                    isReceivingMoney: isReceivingMoney,
+                }, this, function (result) { }, function (is_error) { });
+            },
+
             /* Example:
             
             onMyMethodToCall1: function( evt )
@@ -328,6 +345,7 @@ define([
                 dojo.subscribe('parcelClaimed', this, 'notifParcelClaimed');
                 dojo.subscribe('personalityChosen', this, 'notifPersonalityChosen');
                 dojo.subscribe('allPersonalitesChosen', this, 'notifResetCurrentTurnTracker');
+                dojo.subscribe('updateResources', this, 'notifUpdateResources');
 
                 // TODO: here, associate your game notifications with local methods
 
@@ -383,6 +401,13 @@ define([
                 for (let i = 1; i <= this.gamedatas.playerorder.length; i++)
                     this.slideToObject(`peg_turn_tracker_${newTurnOrder[i]}`, 'current_turn_tracker_' + i).play();
             },
+
+            notifUpdateResources: function (notif) {
+                let playerId = this.getActivePlayerId();
+                let resourcesChanged = notif.args.resourcesChanged;
+                for (let [resource, amount] of Object.entries(resourcesChanged))
+                    this.counters[playerId][resource].incValue(amount);
+            }
 
             /*
             Example:

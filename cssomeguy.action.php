@@ -58,6 +58,16 @@ class action_cssomeguy extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function chooseGrocerBenefit()
+  {
+    $this->setAjaxMode();
+
+    $is_receiving_money = $this->getArg('isReceivingMoney', AT_bool, true);
+    $this->game->chooseGrocerBenefit($is_receiving_money);
+
+    $this->ajaxResponse();
+  }
+
   /*
     
     Example:
