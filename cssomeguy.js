@@ -145,6 +145,7 @@ define([
 
                 switch (stateName) {
                     case 'initialParcelClaims':
+                    case 'settlerChosen':
                         this.connectClass('city_square', 'onclick', 'onClaimParcel');
                         break;
 
@@ -176,6 +177,7 @@ define([
 
                 switch (stateName) {
                     case 'initialParcelClaims':
+                    case 'settlerChosen':
                         this.disconnectAll();
                         break;
                     case 'choosePersonality':

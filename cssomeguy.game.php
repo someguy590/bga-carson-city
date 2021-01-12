@@ -301,7 +301,8 @@ class cssomeguy extends Table
             return;
         }
         else if ($personality_id == $this->personality_ids['settler']) {
-
+            $this->gamestate->nextState('settlerChosen');
+            return;
         }
         else if ($personality_id == $this->personality_ids['captain']) {
             $this->gamestate->nextState('captainChosen');

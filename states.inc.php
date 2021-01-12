@@ -58,7 +58,9 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define('PLACE_COWBOY', 6);
 
     define('GROCER_CHOSEN', 7);
+    define('SETTLER_CHOSEN', 8);
     define('CAPTAIN_CHOSEN', 9);
+
     define('STATE_END_GAME', 99);
 }
 
@@ -101,6 +103,7 @@ $machinestates = array(
         'transitions' => [
             'personalityChosen' => PERSONALITY_CHOSEN,
             'grocerChosen' => GROCER_CHOSEN,
+            'settlerChosen' => SETTLER_CHOSEN,
             'captainChosen' => CAPTAIN_CHOSEN
         ]
     ],
@@ -124,6 +127,15 @@ $machinestates = array(
         'transitions' => ['personalityChosen' => PERSONALITY_CHOSEN]
     ],
 
+    SETTLER_CHOSEN => [
+        'name' => 'settlerChosen',
+        'description' => clienttranslate('${actplayer} must claim a parcel of land'),
+        'descriptionmyturn' => clienttranslate('${you} must claim a parcel of land'),
+        'type' => 'activeplayer',
+        'possibleactions' => ['claimParcel'],
+        'transitions' => ['parcelClaimed' => PERSONALITY_CHOSEN]
+    ],
+    
     CAPTAIN_CHOSEN => [
         'name' => 'captainChosen',
         'description' => clienttranslate('${actplayer} must choose a benefit from ${personality_name}'),
