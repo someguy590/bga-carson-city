@@ -281,6 +281,8 @@ class cssomeguy extends Table
 
     function choosePersonality($personality_id)
     {
+        $this->checkAction('choosePersonality');
+
         $sql = "SELECT personality FROM player WHERE personality=$personality_id";
         $is_personality_chosen = !is_null($this->getUniqueValueFromDB($sql));
 
