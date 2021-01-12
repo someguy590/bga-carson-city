@@ -288,20 +288,20 @@ class cssomeguy extends Table
         }
         $sql .= " WHERE player_id=$player_id";
         $this->DbQuery($sql);
-        
+
         $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
             'player_name' => $this->getActivePlayerName(),
             'personality' => $this->personalities[$personality_id]['name'],
             'personalityId' => $personality_id,
             'resourcesChanged' => $resources_changed
         ]);
-        
+
         if ($personality_id == $this->personality_ids['grocer']) {
             $this->gamestate->nextState('grocerChosen');
             return;
         }
         else if ($personality_id == $this->personality_ids['settler']) {
-            
+
         }
         else if ($personality_id == $this->personality_ids['captain']) {
             $this->gamestate->nextState('captainChosen');
@@ -319,7 +319,7 @@ class cssomeguy extends Table
         if ($is_receiving_money) {
             $sql = "UPDATE player SET money=money+8, is_using_personality_benefit=true WHERE player_id=$player_id";
             $this->DbQuery($sql);
-            
+
             $notification_type = 'updateResources';
             $msg = clienttranslate('${player_name} receives $8');
             $resources_changed['money'] = 8;
