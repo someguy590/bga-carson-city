@@ -229,12 +229,13 @@ class cssomeguy extends Table
     /**
      * Handles notification and state transition of player choosing a personality
      */
-    function finishChoosePersonality($personality_id)
+    function finishChoosePersonality($personality_id, $resources_changed)
     {
         $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
             'player_name' => $this->getActivePlayerName(),
             'personality' => $this->personalities[$personality_id]['name'],
-            'personalityId' => $personality_id
+            'personalityId' => $personality_id,
+            'resourcesChanged' => $resources_changed
         ]);
         $this->gamestate->nextState('personalityChosen');
     }
@@ -287,10 +288,28 @@ class cssomeguy extends Table
             throw new BgaUserException($this->_('Personality already claimed'));
 
         $player_id = $this->getActivePlayerId();
-        $sql = "UPDATE player SET personality=$personality_id WHERE player_id=$player_id";
+        $resources_changed = [];
+        $sql = "UPDATE player SET personality=$personality_id";
+        if ($personality_id == $this->personality_ids['banker']) {
+            $sql .=  ",money=money+9";
+            $resources_changed['money'] = 9;
+        }
+        else if ($personality_id == $this->personality_ids['grocer']) {
+            
+        }
+        else if ($personality_id == $this->personality_ids['coolie']) {
+            $sql .=  ",roads=roads+2";
+            $resources_changed['roads'] = 2;
+        }
+        else if ($personality_id == $this->personality_ids['settler']) {
+            
+        }
+        else if ($personality_id == $this->personality_ids['captain']) {
+        }
+        $sql .= " WHERE player_id=$player_id";
         $this->DbQuery($sql);
 
-        $this->finishChoosePersonality($personality_id);
+        $this->finishChoosePersonality($personality_id, $resources_changed);
     }
 
     /*

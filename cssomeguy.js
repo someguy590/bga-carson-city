@@ -362,6 +362,7 @@ define([
             notifPersonalityChosen: function (notif) {
                 let playerId = this.getActivePlayerId();
                 let personalityId = notif.args.personalityId;
+                let resourcesChanged = notif.args.resourcesChanged;
 
                 dojo.place(this.format_block('jstplPeg', {
                     pegType: 'personality',
@@ -372,6 +373,9 @@ define([
                 let pegDivId = `peg_personality_${playerId}`;
                 this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
                 this.slideToObject(pegDivId, 'personality_' + personalityId).play();
+
+                for (let [resource, amount] of Object.entries(resourcesChanged))
+                    this.counters[playerId][resource].incValue(amount);
             },
 
             notifResetCurrentTurnTracker: function (notif) {
