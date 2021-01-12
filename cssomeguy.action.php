@@ -68,6 +68,16 @@ class action_cssomeguy extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function chooseCaptainBenefit()
+  {
+    $this->setAjaxMode();
+
+    $amount_spent = $this->getArg('amountSpent', AT_int, true);
+    $this->game->chooseCaptainBenefit($amount_spent);
+
+    $this->ajaxResponse();
+  }
+
   /*
     
     Example:

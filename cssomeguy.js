@@ -210,6 +210,24 @@ define([
                             this.addActionButton('money', _('Receive $8'), 'onChooseGrocerBenefit');
                             this.addActionButton('income', _('Decide later to receive $8 or double your income from 1 building type'), 'onChooseGrocerBenefit');
                             break;
+                        case 'captainChosen':
+                            for (let [moneyAmount, cowboyAmount] of Object.entries(args.payOptions)) {
+                                let msg = '';
+                                if (cowboyAmount == 1) {
+                                    msg = dojo.string.substitute(_('Spend $${moneyAmount} for ${cowboyAmount} cowboy'), {
+                                        moneyAmount: moneyAmount,
+                                        cowboyAmount: cowboyAmount
+                                    });
+                                }
+                                else {
+                                    msg = dojo.string.substitute(_('Spend $${moneyAmount} for ${cowboyAmount} cowboys'), {
+                                        moneyAmount: moneyAmount,
+                                        cowboyAmount: cowboyAmount
+                                    });
+                                }
+                                this.addActionButton('spend_' + moneyAmount, msg, 'onChooseCaptainBenefit');
+                            }
+                            break;
                         /*               
                                          Example:
                          
@@ -289,6 +307,19 @@ define([
                 this.ajaxcall("/cssomeguy/cssomeguy/chooseGrocerBenefit.html", {
                     lock: true,
                     isReceivingMoney: isReceivingMoney,
+                }, this, function (result) { }, function (is_error) { });
+            },
+
+            onChooseCaptainBenefit: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('chooseCaptainBenefit'))
+                    return;
+
+                let amountSpent = e.target.id.split('_')[1];
+                this.ajaxcall("/cssomeguy/cssomeguy/chooseCaptainBenefit.html", {
+                    lock: true,
+                    amountSpent: amountSpent,
                 }, this, function (result) { }, function (is_error) { });
             },
 

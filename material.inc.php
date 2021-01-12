@@ -113,6 +113,11 @@ $this->personalities = [
   ],
   $this->personality_ids['captain'] => [
     'name' => clienttranslate('The Captain'),
+    'pay_options' => [
+      1 => 1,
+      4 => 2,
+      9 => 3
+    ]
   ],
   $this->personality_ids['mercenary'] => [
     'name' => clienttranslate('The Mercenary'),

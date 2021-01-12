@@ -304,6 +304,8 @@ class cssomeguy extends Table
             
         }
         else if ($personality_id == $this->personality_ids['captain']) {
+            $this->gamestate->nextState('captainChosen');
+            return;
         }
 
         $this->gamestate->nextState('personalityChosen');
@@ -332,6 +334,41 @@ class cssomeguy extends Table
             'player_name' => $this->getActivePlayerName(),
             'resourcesChanged' => $resources_changed
         ]);
+
+        $this->gamestate->nextState('personalityChosen');
+    }
+
+    function chooseCaptainBenefit($amount_spent)
+    {
+        $this->checkAction('chooseCaptainBenefit');
+
+        $player_id = $this->getActivePlayerId();
+        $sql = "SELECT money, cowboys FROM player WHERE player_id=$player_id";
+        $current_resources = $this->getObjectFromDB($sql);
+
+        if ($amount_spent > $current_resources['money'])
+            throw new BgaUserException($this->_('Not enough money'));
+
+        $cowboys_gaining = $this->personalities[$this->personality_ids['captain']]['pay_options'][$amount_spent];
+
+        if ($cowboys_gaining + $current_resources['cowboys'] > 10)
+            $cowboys_gaining -= $cowboys_gaining + $current_resources['cowboys'] - 10;
+
+        $sql = "UPDATE player SET cowboys=cowboys+$cowboys_gaining, money=money-$amount_spent WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $resources_changed['cowboys'] = $cowboys_gaining;
+        $resources_changed['money'] = -$amount_spent;
+        $this->notifyAllPlayers(
+            'updateResources',
+            '${player_name} pays $${money} to get ${cowboys_gaining} cowboy(s)',
+            [
+                'player_name' => $this->getActivePlayerName(),
+                'money' => $amount_spent,
+                'cowboys_gaining' => $cowboys_gaining,
+                'resourcesChanged' => $resources_changed
+            ]
+        );
 
         $this->gamestate->nextState('personalityChosen');
     }
@@ -377,6 +414,15 @@ class cssomeguy extends Table
     {
         return [
             'personality_name' => $this->personalities[$this->personality_ids['grocer']]['name']
+        ];
+    }
+
+    function argCaptainChosen()
+    {
+        $pay_options = $this->personalities[$this->personality_ids['captain']]['pay_options'];
+        return [
+            'personality_name' => $this->personalities[$this->personality_ids['captain']]['name'],
+            'payOptions' => $pay_options
         ];
     }
 
