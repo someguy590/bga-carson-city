@@ -113,7 +113,7 @@ class cssomeguy extends Table
         $data = [];
 
         // Get information about players
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality FROM player";
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
         $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
@@ -123,6 +123,8 @@ class cssomeguy extends Table
         $data['parcels'] = $this->getObjectListFromDB($sql);
 
         $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
+
+        $data['personalityIds'] = $this->personality_ids;
 
         return $data;
     }
@@ -278,7 +280,10 @@ class cssomeguy extends Table
         $player_id = $this->getActivePlayerId();
         $resources_changed = [];
         $sql = "UPDATE player SET personality=$personality_id";
-        if ($personality_id == $this->personality_ids['banker']) {
+        if ($personality_id == $this->personality_ids['sheriff']) {
+            $sql .=  ",is_using_personality_benefit=false";
+        }
+        else if ($personality_id == $this->personality_ids['banker']) {
             $sql .=  ",money=money+9";
             $resources_changed['money'] = 9;
         }

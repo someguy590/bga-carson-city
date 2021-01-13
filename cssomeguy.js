@@ -93,6 +93,11 @@ define([
                     playerCounter.propertyTiles.setValue(player.propertyTiles);
 
                     this.counters[playerId] = playerCounter;
+
+                    if (player.personality == gamedatas.personalityIds.sheriff && player.isUsingPersonalityBenefit == 0) {
+                        dojo.place(this.format_block('jstplSheriffCowboy', {
+                        }), 'inventory_' + playerId);
+                    }
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
@@ -424,6 +429,17 @@ define([
                 let pegDivId = `peg_personality_${playerId}`;
                 this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
                 this.slideToObject(pegDivId, 'personality_' + personalityId).play();
+
+                let sheriffId = this.gamedatas.personalityIds.sheriff;
+                if (personalityId == sheriffId) {
+                    let sheriffCowboyWrapperDivId = 'sheriff_cowboy_wrapper';
+                    dojo.place(`<div id="${sheriffCowboyWrapperDivId}" style="position: relative"></div>`, 'inventory_' + playerId);
+                    dojo.place(this.format_block('jstplSheriffCowboy', {
+                    }), sheriffCowboyWrapperDivId);
+
+                    this.placeOnObject('sheriff_cowboy', 'personality_' + sheriffId);
+                    this.slideToObject('sheriff_cowboy', sheriffCowboyWrapperDivId).play();
+                }
 
                 for (let [resource, amount] of Object.entries(resourcesChanged))
                     this.counters[playerId][resource].incValue(amount);

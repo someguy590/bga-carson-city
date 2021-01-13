@@ -83,6 +83,8 @@ var jstplPlayerBoard = '\
         <div id="inventory_${playerId}" class="whiteblock inventory"></div>\
     </div>';
 
+var jstplSheriffCowboy = '<div id="sheriff_cowboy"></div>';
+
     /*
     // Example:
     var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
