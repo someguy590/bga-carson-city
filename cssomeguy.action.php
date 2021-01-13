@@ -38,13 +38,42 @@ class action_cssomeguy extends APP_GameAction
   }
 
   // TODO: defines your action entry points there
-  public function initialParcelClaim()
+  public function claimParcel()
   {
     $this->setAjaxMode();
 
     $parcel_id = $this->getArg('parcelId', AT_int, true);
+    $this->game->claimParcel($parcel_id);
 
-    $this->game->initialParcelClaim($parcel_id);
+    $this->ajaxResponse();
+  }
+
+  public function choosePersonality()
+  {
+    $this->setAjaxMode();
+
+    $personality_id = $this->getArg('personalityId', AT_int, true);
+    $this->game->choosePersonality($personality_id);
+
+    $this->ajaxResponse();
+  }
+
+  public function chooseGrocerBenefit()
+  {
+    $this->setAjaxMode();
+
+    $is_receiving_money = $this->getArg('isReceivingMoney', AT_bool, true);
+    $this->game->chooseGrocerBenefit($is_receiving_money);
+
+    $this->ajaxResponse();
+  }
+
+  public function chooseCaptainBenefit()
+  {
+    $this->setAjaxMode();
+
+    $amount_spent = $this->getArg('amountSpent', AT_int, true);
+    $this->game->chooseCaptainBenefit($amount_spent);
 
     $this->ajaxResponse();
   }

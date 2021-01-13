@@ -52,11 +52,20 @@ define([
                 this.counters = {};
                 for (let [playerId, player] of Object.entries(gamedatas.players)) {
                     dojo.place(this.format_block('jstplPeg', {
-                        turnOrder: player.turnOrder,
+                        pegType: 'turn_tracker',
                         playerId: playerId,
                         color: player.color
                     }), 'tiles');
-                    this.placeOnObject(`peg_${player.turnOrder}_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+                    this.placeOnObject(`peg_turn_tracker_${playerId}`, 'current_turn_tracker_' + player.turnOrder);
+
+                    if (player.personality != null) {
+                        dojo.place(this.format_block('jstplPeg', {
+                            pegType: 'personality',
+                            playerId: playerId,
+                            color: player.color
+                        }), 'tiles');
+                        this.placeOnObject(`peg_personality_${playerId}`, 'personality_' + player.personality);
+                    }
 
                     // TODO: Setting up players boards if needed
                     let playerBoardDiv = $('player_board_' + playerId);
@@ -84,6 +93,11 @@ define([
                     playerCounter.propertyTiles.setValue(player.propertyTiles);
 
                     this.counters[playerId] = playerCounter;
+
+                    if (player.personality == gamedatas.personalityIds.sheriff && player.isUsingPersonalityBenefit == 0) {
+                        dojo.place(this.format_block('jstplSheriffCowboy', {
+                        }), 'inventory_' + playerId);
+                    }
                 }
 
                 // TODO: Set up your game interface here, according to "gamedatas"
@@ -136,7 +150,12 @@ define([
 
                 switch (stateName) {
                     case 'initialParcelClaims':
-                        this.connectClass('city_square', 'onclick', 'onInitialParcelClaim');
+                    case 'settlerChosen':
+                        this.connectClass('city_square', 'onclick', 'onClaimParcel');
+                        break;
+
+                    case 'choosePersonality':
+                        this.connectClass('personality', 'onclick', 'onChoosePersonality');
                         break;
 
                     /* Example:
@@ -163,6 +182,10 @@ define([
 
                 switch (stateName) {
                     case 'initialParcelClaims':
+                    case 'settlerChosen':
+                        this.disconnectAll();
+                        break;
+                    case 'choosePersonality':
                         this.disconnectAll();
                         break;
 
@@ -190,6 +213,28 @@ define([
 
                 if (this.isCurrentPlayerActive()) {
                     switch (stateName) {
+                        case 'grocerChosen':
+                            this.addActionButton('money', _('Receive $8'), 'onChooseGrocerBenefit');
+                            this.addActionButton('income', _('Decide later to receive $8 or double your income from 1 building type'), 'onChooseGrocerBenefit');
+                            break;
+                        case 'captainChosen':
+                            for (let [moneyAmount, cowboyAmount] of Object.entries(args.payOptions)) {
+                                let msg = '';
+                                if (cowboyAmount == 1) {
+                                    msg = dojo.string.substitute(_('Spend $${moneyAmount} for ${cowboyAmount} cowboy'), {
+                                        moneyAmount: moneyAmount,
+                                        cowboyAmount: cowboyAmount
+                                    });
+                                }
+                                else {
+                                    msg = dojo.string.substitute(_('Spend $${moneyAmount} for ${cowboyAmount} cowboys'), {
+                                        moneyAmount: moneyAmount,
+                                        cowboyAmount: cowboyAmount
+                                    });
+                                }
+                                this.addActionButton('spend_' + moneyAmount, msg, 'onChooseCaptainBenefit');
+                            }
+                            break;
                         /*               
                                          Example:
                          
@@ -231,17 +276,57 @@ define([
             
             */
 
-            onInitialParcelClaim: function (e) {
+            onClaimParcel: function (e) {
                 // Preventing default browser reaction
                 dojo.stopEvent(e);
-                if (!this.checkAction('initialParcelClaim'))
+                if (!this.checkAction('claimParcel'))
                     return;
 
                 let parcelId = e.target.id.split('_')[2];
 
-                this.ajaxcall("/cssomeguy/cssomeguy/initialParcelClaim.html", {
+                this.ajaxcall("/cssomeguy/cssomeguy/claimParcel.html", {
                     lock: true,
                     parcelId: parcelId
+                }, this, function (result) { }, function (is_error) { });
+            },
+
+            onChoosePersonality: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('choosePersonality'))
+                    return;
+
+                let personalityId = e.target.id.split('_')[1];
+
+                this.ajaxcall("/cssomeguy/cssomeguy/choosePersonality.html", {
+                    lock: true,
+                    personalityId: personalityId
+                }, this, function (result) { }, function (is_error) { });
+            },
+
+            onChooseGrocerBenefit: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('chooseGrocerBenefit'))
+                    return;
+
+                let isReceivingMoney = e.target.id == 'money';
+                this.ajaxcall("/cssomeguy/cssomeguy/chooseGrocerBenefit.html", {
+                    lock: true,
+                    isReceivingMoney: isReceivingMoney,
+                }, this, function (result) { }, function (is_error) { });
+            },
+
+            onChooseCaptainBenefit: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('chooseCaptainBenefit'))
+                    return;
+
+                let amountSpent = e.target.id.split('_')[1];
+                this.ajaxcall("/cssomeguy/cssomeguy/chooseCaptainBenefit.html", {
+                    lock: true,
+                    amountSpent: amountSpent,
                 }, this, function (result) { }, function (is_error) { });
             },
 
@@ -296,6 +381,9 @@ define([
                 console.log('notifications subscriptions setup');
 
                 dojo.subscribe('parcelClaimed', this, 'notifParcelClaimed');
+                dojo.subscribe('personalityChosen', this, 'notifPersonalityChosen');
+                dojo.subscribe('allPersonalitesChosen', this, 'notifResetCurrentTurnTracker');
+                dojo.subscribe('updateResources', this, 'notifUpdateResources');
 
                 // TODO: here, associate your game notifications with local methods
 
@@ -326,6 +414,49 @@ define([
 
                 this.counters[playerId].propertyTiles.incValue(-1);
             },
+
+            notifPersonalityChosen: function (notif) {
+                let playerId = this.getActivePlayerId();
+                let personalityId = notif.args.personalityId;
+                let resourcesChanged = notif.args.resourcesChanged;
+
+                dojo.place(this.format_block('jstplPeg', {
+                    pegType: 'personality',
+                    playerId: playerId,
+                    color: this.gamedatas.players[playerId].color
+                }), 'tiles');
+
+                let pegDivId = `peg_personality_${playerId}`;
+                this.placeOnObject(pegDivId, 'overall_player_board_' + playerId);
+                this.slideToObject(pegDivId, 'personality_' + personalityId).play();
+
+                let sheriffId = this.gamedatas.personalityIds.sheriff;
+                if (personalityId == sheriffId) {
+                    let sheriffCowboyWrapperDivId = 'sheriff_cowboy_wrapper';
+                    dojo.place(`<div id="${sheriffCowboyWrapperDivId}" style="position: relative"></div>`, 'inventory_' + playerId);
+                    dojo.place(this.format_block('jstplSheriffCowboy', {
+                    }), sheriffCowboyWrapperDivId);
+
+                    this.placeOnObject('sheriff_cowboy', 'personality_' + sheriffId);
+                    this.slideToObject('sheriff_cowboy', sheriffCowboyWrapperDivId).play();
+                }
+
+                for (let [resource, amount] of Object.entries(resourcesChanged))
+                    this.counters[playerId][resource].incValue(amount);
+            },
+
+            notifResetCurrentTurnTracker: function (notif) {
+                let newTurnOrder = notif.args.newTurnOrder;
+                for (let i = 1; i <= this.gamedatas.playerorder.length; i++)
+                    this.slideToObject(`peg_turn_tracker_${newTurnOrder[i]}`, 'current_turn_tracker_' + i).play();
+            },
+
+            notifUpdateResources: function (notif) {
+                let playerId = this.getActivePlayerId();
+                let resourcesChanged = notif.args.resourcesChanged;
+                for (let [resource, amount] of Object.entries(resourcesChanged))
+                    this.counters[playerId][resource].incValue(amount);
+            }
 
             /*
             Example:

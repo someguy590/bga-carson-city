@@ -110,24 +110,23 @@ class cssomeguy extends Table
     */
     protected function getAllDatas()
     {
-        $result = array();
-
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $data = [];
 
         // Get information about players
-        // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder FROM player ";
-        $result['players'] = self::getCollectionFromDb($sql);
+        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
+        $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $result['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
+        $data['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
 
         $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
-        $result['parcels'] = $this->getObjectListFromDB($sql);
+        $data['parcels'] = $this->getObjectListFromDB($sql);
 
-        $result['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
+        $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
 
-        return $result;
+        $data['personalityIds'] = $this->personality_ids;
+
+        return $data;
     }
 
     /*
@@ -238,9 +237,9 @@ class cssomeguy extends Table
         (note: each method below must match an input method in cssomeguy.action.php)
     */
 
-    function initialParcelClaim($parcel_id)
+    function claimParcel($parcel_id)
     {
-        $this->checkAction('initialParcelClaim');
+        $this->checkAction('claimParcel');
 
         $sql = "SELECT parcel_id FROM parcels WHERE parcel_id=$parcel_id";
         $is_parcel_claimed = !is_null($this->getUniqueValueFromDB($sql));
@@ -266,6 +265,118 @@ class cssomeguy extends Table
         ]);
 
         $this->gamestate->nextState('parcelClaimed');
+    }
+
+    function choosePersonality($personality_id)
+    {
+        $this->checkAction('choosePersonality');
+
+        $sql = "SELECT personality FROM player WHERE personality=$personality_id";
+        $is_personality_chosen = !is_null($this->getUniqueValueFromDB($sql));
+
+        if ($is_personality_chosen)
+            throw new BgaUserException($this->_('Personality already claimed'));
+
+        $player_id = $this->getActivePlayerId();
+        $resources_changed = [];
+        $sql = "UPDATE player SET personality=$personality_id";
+        if ($personality_id == $this->personality_ids['sheriff']) {
+            $sql .=  ",is_using_personality_benefit=false";
+        }
+        else if ($personality_id == $this->personality_ids['banker']) {
+            $sql .=  ",money=money+9";
+            $resources_changed['money'] = 9;
+        }
+        else if ($personality_id == $this->personality_ids['coolie']) {
+            $sql .=  ",roads=roads+2";
+            $resources_changed['roads'] = 2;
+        }
+        $sql .= " WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $this->notifyAllPlayers('personalityChosen', clienttranslate('${player_name} chooses ${personality}'), [
+            'player_name' => $this->getActivePlayerName(),
+            'personality' => $this->personalities[$personality_id]['name'],
+            'personalityId' => $personality_id,
+            'resourcesChanged' => $resources_changed
+        ]);
+
+        if ($personality_id == $this->personality_ids['grocer']) {
+            $this->gamestate->nextState('grocerChosen');
+            return;
+        }
+        else if ($personality_id == $this->personality_ids['settler']) {
+            $this->gamestate->nextState('settlerChosen');
+            return;
+        }
+        else if ($personality_id == $this->personality_ids['captain']) {
+            $this->gamestate->nextState('captainChosen');
+            return;
+        }
+
+        $this->gamestate->nextState('personalityChosen');
+    }
+
+    function chooseGrocerBenefit($is_receiving_money)
+    {
+        $this->checkAction('chooseGrocerBenefit');
+
+        $player_id = $this->getActivePlayerId();
+        if ($is_receiving_money) {
+            $sql = "UPDATE player SET money=money+8, is_using_personality_benefit=true WHERE player_id=$player_id";
+            $this->DbQuery($sql);
+
+            $notification_type = 'updateResources';
+            $msg = clienttranslate('${player_name} receives $8');
+            $resources_changed['money'] = 8;
+        }
+        else {
+            $notification_type = 'log';
+            $msg = clienttranslate('${player_name} decides to later receive $8 or receive double income from 1 building type during the building income phase');
+            $resources_changed = [];
+        }
+
+        $this->notifyAllPlayers($notification_type, $msg, [
+            'player_name' => $this->getActivePlayerName(),
+            'resourcesChanged' => $resources_changed
+        ]);
+
+        $this->gamestate->nextState('personalityChosen');
+    }
+
+    function chooseCaptainBenefit($amount_spent)
+    {
+        $this->checkAction('chooseCaptainBenefit');
+
+        $player_id = $this->getActivePlayerId();
+        $sql = "SELECT money, cowboys FROM player WHERE player_id=$player_id";
+        $current_resources = $this->getObjectFromDB($sql);
+
+        if ($amount_spent > $current_resources['money'])
+            throw new BgaUserException($this->_('Not enough money'));
+
+        $cowboys_gaining = $this->personalities[$this->personality_ids['captain']]['pay_options'][$amount_spent];
+
+        if ($cowboys_gaining + $current_resources['cowboys'] > 10)
+            $cowboys_gaining -= $cowboys_gaining + $current_resources['cowboys'] - 10;
+
+        $sql = "UPDATE player SET cowboys=cowboys+$cowboys_gaining, money=money-$amount_spent WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $resources_changed['cowboys'] = $cowboys_gaining;
+        $resources_changed['money'] = -$amount_spent;
+        $this->notifyAllPlayers(
+            'updateResources',
+            '${player_name} pays $${money} to get ${cowboys_gaining} cowboy(s)',
+            [
+                'player_name' => $this->getActivePlayerName(),
+                'money' => $amount_spent,
+                'cowboys_gaining' => $cowboys_gaining,
+                'resourcesChanged' => $resources_changed
+            ]
+        );
+
+        $this->gamestate->nextState('personalityChosen');
     }
 
     /*
@@ -304,6 +415,22 @@ class cssomeguy extends Table
         These methods function is to return some additional information that is specific to the current
         game state.
     */
+
+    function argGrocerChosen()
+    {
+        return [
+            'personality_name' => $this->personalities[$this->personality_ids['grocer']]['name']
+        ];
+    }
+
+    function argCaptainChosen()
+    {
+        $pay_options = $this->personalities[$this->personality_ids['captain']]['pay_options'];
+        return [
+            'personality_name' => $this->personalities[$this->personality_ids['captain']]['name'],
+            'payOptions' => $pay_options
+        ];
+    }
 
     /*
     
@@ -361,6 +488,45 @@ class cssomeguy extends Table
             $next_player_id = $this->activePrevPlayer();
         $this->giveExtraTime($next_player_id);
         $this->gamestate->nextState('nextParcelClaim');
+    }
+
+    function stPersonalityChosen()
+    {
+        // determine next player to choose personality
+        $sql = "SELECT player_id FROM player WHERE personality IS NULL ORDER BY turn_order ASC LIMIT 1";
+        $player_id = $this->getUniqueValueFromDB($sql);
+
+        // all players picked a personality
+        if (is_null($player_id)) {
+            $sql = "SET @new_turn_order=0";
+            $this->DbQuery($sql);
+
+            $sql =
+            "UPDATE player
+            INNER JOIN 
+            (SELECT (@new_turn_order:=@new_turn_order+1) AS new_turn_order, player_id FROM player ORDER BY personality ASC) new_turn_orders
+            ON player.player_id = new_turn_orders.player_id
+            SET turn_order=new_turn_order";
+            $this->DbQuery($sql);
+
+            $sql = "SELECT turn_order, player_id FROM player";
+            $new_turn_order = $this->getCollectionFromDB($sql, true);
+            $this->notifyAllPlayers('allPersonalitesChosen', '', [
+                'newTurnOrder' => $new_turn_order
+            ]);
+
+            $sql = "SELECT player_id FROM player WHERE turn_order=1";
+            $first_player_id = $this->getUniqueValueFromDB($sql);
+
+            $this->gamestate->changeActivePlayer($first_player_id);
+            $this->giveExtraTime($first_player_id);
+            $this->gamestate->nextState('placeCowboy');
+            return;
+        }
+
+        $this->gamestate->changeActivePlayer($player_id);
+        $this->giveExtraTime($player_id);
+        $this->gamestate->nextState('nextPersonalityChoice');
     }
 
     /*

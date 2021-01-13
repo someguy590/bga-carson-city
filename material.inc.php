@@ -85,6 +85,45 @@ $this->city_tiles = [
   ],
 ];
 
+$this->personality_ids = [
+  'sheriff' => 1,
+  'banker' => 2,
+  'grocer' => 3,
+  'coolie' => 4,
+  'settler' => 5,
+  'captain' => 6,
+  'mercenary' => 7,
+];
+
+$this->personalities = [
+  $this->personality_ids['sheriff'] => [
+    'name' => clienttranslate('The Sheriff'),
+  ],
+  $this->personality_ids['banker'] => [
+    'name' => clienttranslate('The Banker'),
+  ],
+  $this->personality_ids['grocer'] => [
+    'name' => clienttranslate('The Grocer'),
+  ],
+  $this->personality_ids['coolie'] => [
+    'name' => clienttranslate('The Chinese Coolie'),
+  ],
+  $this->personality_ids['settler'] => [
+    'name' => clienttranslate('The Settler'),
+  ],
+  $this->personality_ids['captain'] => [
+    'name' => clienttranslate('The Captain'),
+    'pay_options' => [
+      1 => 1,
+      4 => 2,
+      9 => 3
+    ]
+  ],
+  $this->personality_ids['mercenary'] => [
+    'name' => clienttranslate('The Mercenary'),
+  ]
+];
+
 /*
 
 Example:

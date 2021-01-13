@@ -59,6 +59,45 @@
     height: 917px;
 }
 
+#personalities {
+    display: flex;
+    flex-direction: row;
+}
+
+.personality {
+    background-image: url('img/personalities.jpg');
+    width: 105px;
+    height: 157px;
+}
+
+.personality.personality_sheriff {
+    background-position: 0px 0px;
+}
+
+.personality.personality_banker {
+    background-position: -105px 0px;
+}
+
+.personality.personality_grocer {
+    background-position: -210px 0px;
+}
+
+.personality.personality_coolie {
+    background-position: -315px 0px;
+}
+
+.personality.personality_settler {
+    background-position: -420px 0px;
+}
+
+.personality.personality_captain {
+    background-position: -525px 0px;
+}
+
+.personality.personality_mercenary {
+    background-position: -630px 0px;
+}
+
 .turn_tracker {
     position: absolute;
     width: 25px;
@@ -204,6 +243,11 @@
     font-size: 25px;
 }
 
+.inventory {
+    display: flex;
+    flex-direction: row;
+}
+
 .game_token {
     position: absolute;
     background-image: url('img/game_tokens.png');
@@ -257,4 +301,12 @@
     width: 70px;
     height: 70px;
     z-index: 0;
+}
+
+#sheriff_cowboy {
+    background-image: url('img/sheriff_cowboy.png');
+    width: 24px;
+    height: 30px;
+    z-index: 3;
+    position: relative;
 }

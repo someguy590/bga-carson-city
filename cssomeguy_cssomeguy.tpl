@@ -26,6 +26,15 @@
 -->
 
 <div id="carson_city_play_area">
+    <div id="personalities">
+        <div id="personality_1" class="personality personality_sheriff"></div>
+        <div id="personality_2" class="personality personality_banker"></div>
+        <div id="personality_3" class="personality personality_grocer"></div>
+        <div id="personality_4" class="personality personality_coolie"></div>
+        <div id="personality_5" class="personality personality_settler"></div>
+        <div id="personality_6" class="personality personality_captain"></div>
+        <div id="personality_7" class="personality personality_mercenary"></div>
+    </div>
     <div id="board">
         <!-- BEGIN current_turn_tracker -->
         <div id="current_turn_tracker_{TRACKER_ID}" class="turn_tracker" style="left: {LEFT}px; top: {TOP}px;"></div>
@@ -48,16 +57,15 @@
         <!-- BEGIN road -->
         <div id="road_{ROAD_ID}" class="road_space {ROAD_CLASSES}" style="left: {LEFT}px; top: {TOP}px;"></div>
         <!-- END road -->
-
-        <div id="tiles"></div>
     </div>
+    <div id="tiles"></div>
 </div>
 
 
 <script type="text/javascript">
 
 // Javascript HTML templates
-var jstplPeg = '<div id="peg_${turnOrder}_${playerId}" class="player_piece peg peg_${color}"></div>';
+var jstplPeg = '<div id="peg_${pegType}_${playerId}" class="player_piece peg peg_${color}"></div>';
 
 var jstplRoundTrackerToken = '<div id="round_tracker_token" class="game_token round_tracker_token"></div>';
 
@@ -72,7 +80,10 @@ var jstplPlayerBoard = '\
         <div class="counter_icon revolver_token_icon"></div><span id="revolver_token_count_${playerId}" class="resource_counter"></span>\
         <div class="counter_icon road_icon"></div><span id="road_count_${playerId}" class="resource_counter"></span>\
         <div class="counter_icon property_tile_icon" style="background-color: #${color}"></div><span id="property_tile_count_${playerId}" class="resource_counter"></span>\
+        <div id="inventory_${playerId}" class="whiteblock inventory"></div>\
     </div>';
+
+var jstplSheriffCowboy = '<div id="sheriff_cowboy"></div>';
 
     /*
     // Example:
