@@ -132,6 +132,15 @@ define([
                     this.placeOnObject('city_tile_' + cityTile.id, 'city_square_' + cityTile.location_arg);
                 }
 
+                let cowboys = gamedatas.cowboys;
+                for (let cowboy of cowboys) {
+                    dojo.place(this.format_block('jstplCowboy', {
+                        cowboyId: cowboy.cowboyId,
+                        playerId: cowboy.playerId,
+                        color: this.gamedatas.players[cowboy.playerId].color
+                    }), `${cowboy.locationType}_square_${cowboy.locationId}`);
+                }
+
                 // Setup game notifications to handle (see "setupNotifications" method below)
                 this.setupNotifications();
 
@@ -156,6 +165,10 @@ define([
 
                     case 'choosePersonality':
                         this.connectClass('personality', 'onclick', 'onChoosePersonality');
+                        break;
+
+                    case 'placeCowboy':
+                        this.connectClass('city_square', 'onclick', 'onPlaceCowboy');
                         break;
 
                     /* Example:
@@ -186,6 +199,9 @@ define([
                         this.disconnectAll();
                         break;
                     case 'choosePersonality':
+                        this.disconnectAll();
+                        break;
+                    case 'placeCowboy':
                         this.disconnectAll();
                         break;
 
@@ -330,6 +346,21 @@ define([
                 }, this, function (result) { }, function (is_error) { });
             },
 
+            onPlaceCowboy: function (e) {
+                // Preventing default browser reaction
+                dojo.stopEvent(e);
+                if (!this.checkAction('placeCowboy'))
+                    return;
+
+                let locationType = e.currentTarget.id.split('_')[0];
+                let locationId = e.currentTarget.id.split('_')[2];
+                this.ajaxcall("/cssomeguy/cssomeguy/placeCowboy.html", {
+                    lock: true,
+                    locationType: locationType,
+                    locationId: locationId,
+                }, this, function (result) { }, function (is_error) { });
+            },
+
             /* Example:
             
             onMyMethodToCall1: function( evt )
@@ -384,6 +415,7 @@ define([
                 dojo.subscribe('personalityChosen', this, 'notifPersonalityChosen');
                 dojo.subscribe('allPersonalitesChosen', this, 'notifResetCurrentTurnTracker');
                 dojo.subscribe('updateResources', this, 'notifUpdateResources');
+                dojo.subscribe('cowboyPlaced', this, 'notifCowboyPlaced');
 
                 // TODO: here, associate your game notifications with local methods
 
@@ -456,7 +488,26 @@ define([
                 let resourcesChanged = notif.args.resourcesChanged;
                 for (let [resource, amount] of Object.entries(resourcesChanged))
                     this.counters[playerId][resource].incValue(amount);
-            }
+            },
+
+            notifCowboyPlaced: function (notif) {
+                let playerId = this.getActivePlayerId();
+                let { cowboyId, locationType, locationId } = notif.args;
+
+                let cowboyDivId = `cowboy_${cowboyId}_${playerId}`;
+                dojo.place(`<div id="${cowboyDivId}_wrapper" class="cowboy_wrapper"></div>`, `${locationType}_square_${locationId}`);
+                dojo.place(this.format_block('jstplCowboy', {
+                    cowboyId: cowboyId,
+                    playerId: playerId,
+                    color: this.gamedatas.players[playerId].color
+                }), `${cowboyDivId}_wrapper`);
+
+
+                this.placeOnObject(cowboyDivId, 'overall_player_board_' + playerId);
+                this.slideToObject(cowboyDivId, `${cowboyDivId}_wrapper`).play();
+
+                this.counters[playerId].cowboys.incValue(-1);
+            },
 
             /*
             Example:

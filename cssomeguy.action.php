@@ -78,6 +78,17 @@ class action_cssomeguy extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function placeCowboy()
+  {
+    $this->setAjaxMode();
+
+    $location_type = $this->getArg('locationType', AT_alphanum, true);
+    $location_id = $this->getArg('locationId', AT_int, true);
+    $this->game->placeCowboy($location_type, $location_id);
+
+    $this->ajaxResponse();
+  }
+
   /*
     
     Example:

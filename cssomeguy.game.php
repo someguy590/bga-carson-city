@@ -113,7 +113,7 @@ class cssomeguy extends Table
         $data = [];
 
         // Get information about players
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
+        $sql = "SELECT player_id id, player_no playerNumber, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
         $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
@@ -123,6 +123,9 @@ class cssomeguy extends Table
         $data['parcels'] = $this->getObjectListFromDB($sql);
 
         $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
+
+        $sql = "SELECT cowboy_id cowboyId, owner_id playerId, location_type locationType, location_id locationId FROM cowboys";
+        $data['cowboys'] = $this->getObjectListFromDB($sql);
 
         $data['personalityIds'] = $this->personality_ids;
 
@@ -379,6 +382,38 @@ class cssomeguy extends Table
         $this->gamestate->nextState('personalityChosen');
     }
 
+    function placeCowboy($location_type, $location_id)
+    {
+        $this->checkAction('placeCowboy');
+
+        $player_id = $this->getActivePlayerId();
+
+        $sql = "SELECT cowboys FROM player WHERE player_id=$player_id";
+        $cowboys = $this->getUniqueValueFromDB($sql);
+
+        if ($cowboys == 0)
+            throw new BgaUserException($this->_('You have no more cowboys left'));
+            
+        $sql = "UPDATE player SET cowboys=cowboys-1 WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $sql = "INSERT INTO cowboys (cowboy_id, owner_id, location_type, location_id) VALUES ($cowboys, $player_id, '$location_type', $location_id)";
+        $this->DbQuery($sql);
+
+        [$x, $y] = $this->getCitySquareCoordinates($location_id);
+
+        $this->notifyAllPlayers('cowboyPlaced', clienttranslate('${player_name} places cowboy on city square (${x}, ${y})'), [
+            'player_name' => $this->getActivePlayerName(),
+            'x' => $x,
+            'y' => $y,
+            'cowboyId' => $cowboys,
+            'locationType' => $location_type,
+            'locationId' => $location_id
+        ]);
+
+        $this->gamestate->nextState('cowboyPlaced');
+    }
+
     /*
     
     Example:
@@ -527,6 +562,20 @@ class cssomeguy extends Table
         $this->gamestate->changeActivePlayer($player_id);
         $this->giveExtraTime($player_id);
         $this->gamestate->nextState('nextPersonalityChoice');
+    }
+
+    function stCowboyPlaced()
+    {
+        $prev_player_id = $this->getActivePlayerId();
+        $sql = "SELECT player_id FROM player ORDER BY turn_order ASC";
+        $turn_order_ids = $this->getObjectListFromDB($sql, true);
+
+        $next_player_table = $this->createNextPlayerTable($turn_order_ids);
+        $next_player_id = $next_player_table[$prev_player_id];
+
+        $this->gamestate->changeActivePlayer($next_player_id);
+        $this->giveExtraTime($next_player_id);
+        $this->gamestate->nextState('nextPlayer');
     }
 
     /*

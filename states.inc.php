@@ -56,10 +56,11 @@ if (!defined('STATE_END_GAME')) { // ensure this block is only invoked once, sin
     define('CHOOSE_PERSONALITY', 4);
     define('PERSONALITY_CHOSEN', 5);
     define('PLACE_COWBOY', 6);
+    define('COWBOY_PLACED', 7);
 
-    define('GROCER_CHOSEN', 7);
-    define('SETTLER_CHOSEN', 8);
-    define('CAPTAIN_CHOSEN', 9);
+    define('GROCER_CHOSEN', 8);
+    define('SETTLER_CHOSEN', 9);
+    define('CAPTAIN_CHOSEN', 10);
 
     define('STATE_END_GAME', 99);
 }
@@ -152,7 +153,16 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} must place a cowboy or pass'),
         'type' => 'activeplayer',
         'possibleactions' => ['placeCowboy', 'pass'],
-        'transitions' => ['placeCowboy' => PLACE_COWBOY]
+        'transitions' => ['cowboyPlaced' => COWBOY_PLACED]
+    ],
+
+    COWBOY_PLACED => [
+        'name' => 'cowboyPlaced',
+        'description' => '',
+        'descriptionmyturn' => '',
+        'type' => 'game',
+        'action' => 'stCowboyPlaced',
+        'transitions' => ['nextPlayer' => PLACE_COWBOY]
     ],
 
     /*
