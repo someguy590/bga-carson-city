@@ -550,8 +550,7 @@ class cssomeguy extends Table
                 'newTurnOrder' => $new_turn_order
             ]);
 
-            $sql = "SELECT player_id FROM player WHERE turn_order=1";
-            $first_player_id = $this->getUniqueValueFromDB($sql);
+            $first_player_id = $new_turn_order[1];
 
             $this->gamestate->changeActivePlayer($first_player_id);
             $this->giveExtraTime($first_player_id);
