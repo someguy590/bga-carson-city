@@ -393,6 +393,22 @@ class cssomeguy extends Table
 
         if ($cowboys == 0)
             throw new BgaUserException($this->_('You have no more cowboys left'));
+
+        if ($location_type == 'city') {
+            $sql = "SELECT owner_id FROM parcels WHERE parcel_id=$location_id";
+            $is_parceled = !is_null($this->getUniqueValueFromDB($sql));
+            if ($is_parceled) {
+                $is_built_on = empty($this->city_tiles_deck->getCardsInLocation($location_type, $location_id));
+                if ($is_built_on)
+                    throw new BgaUserException($this->_('You cannot place a cowboy on an empty parcel'));
+            }
+        }
+
+        $sql = "SELECT owner_id FROM cowboys WHERE location_type='$location_type' AND location_id=$location_id AND owner_id=$player_id";
+        $is_cowboy_already_placed = !is_null($this->getUniqueValueFromDB($sql));
+
+        if ($is_cowboy_already_placed)
+            throw new BgaUserException($this->_('You already placed a cowboy here'));
             
         $sql = "UPDATE player SET cowboys=cowboys-1 WHERE player_id=$player_id";
         $this->DbQuery($sql);
