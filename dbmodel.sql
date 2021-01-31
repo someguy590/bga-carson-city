@@ -49,6 +49,16 @@ CREATE TABLE IF NOT EXISTS `parcels` (
   FOREIGN KEY (`owner_id`) REFERENCES player(`player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `cowboys` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `cowboy_id` int unsigned NOT NULL,
+  `owner_id` int(10) unsigned NOT NULL,
+  `location_type` varchar(10) NOT NULL,
+  `location_id` int unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`owner_id`) REFERENCES player(`player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
 -- CREATE TABLE IF NOT EXISTS `card` (

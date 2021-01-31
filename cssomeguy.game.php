@@ -113,7 +113,7 @@ class cssomeguy extends Table
         $data = [];
 
         // Get information about players
-        $sql = "SELECT player_id id, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
+        $sql = "SELECT player_id id, player_no playerNumber, player_score score, cowboys, money, revolvers, revolver_tokens revolverTokens, roads, property_tiles propertyTiles, turn_order turnOrder, personality, is_using_personality_benefit isUsingPersonalityBenefit FROM player";
         $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
@@ -123,6 +123,9 @@ class cssomeguy extends Table
         $data['parcels'] = $this->getObjectListFromDB($sql);
 
         $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
+
+        $sql = "SELECT cowboy_id cowboyId, owner_id playerId, location_type locationType, location_id locationId FROM cowboys";
+        $data['cowboys'] = $this->getObjectListFromDB($sql);
 
         $data['personalityIds'] = $this->personality_ids;
 
@@ -208,17 +211,24 @@ class cssomeguy extends Table
 
         $ranch_tile_type_id = $this->city_tile_type_ids['ranch'];
         $mine_tile_type_id = $this->city_tile_type_ids['mine'];
+        $building_location_3 = $this->action_ids['building_construction_3'];
+        $building_location_4 = $this->action_ids['building_construction_4'];
+        $building_location_10 = $this->action_ids['building_construction_10'];
+        $building_location_12 = $this->action_ids['building_construction_12'];
+
         $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
         $values = [];
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 0)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', 1)";
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 5)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', 6)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_3)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_4)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_10)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_12)";
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
 
-        for ($i = 2; $i <= 4; $i++)
-            $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_5']);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_6']);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_8']);
+        
     }
 
     function getCitySquareCoordinates($city_square_id): array
@@ -379,6 +389,56 @@ class cssomeguy extends Table
         $this->gamestate->nextState('personalityChosen');
     }
 
+    function placeCowboy($location_type, $location_id)
+    {
+        $this->checkAction('placeCowboy');
+
+        $player_id = $this->getActivePlayerId();
+
+        $sql = "SELECT cowboys FROM player WHERE player_id=$player_id";
+        $cowboys = $this->getUniqueValueFromDB($sql);
+
+        if ($cowboys == 0)
+            throw new BgaUserException($this->_('You have no more cowboys left'));
+
+        if ($location_type == 'city') {
+            $sql = "SELECT owner_id FROM parcels WHERE parcel_id=$location_id";
+            $is_parceled = !is_null($this->getUniqueValueFromDB($sql));
+            if ($is_parceled) {
+                $is_built_on = empty($this->city_tiles_deck->getCardsInLocation($location_type, $location_id));
+                if ($is_built_on)
+                    throw new BgaUserException($this->_('You cannot place a cowboy on an empty parcel'));
+            }
+        }
+
+        if ($location_type == 'city' || ($location_type == 'action' && $this->actions[$location_id]['is_duel_zone'])) {
+            $sql = "SELECT owner_id FROM cowboys WHERE location_type='$location_type' AND location_id=$location_id AND owner_id=$player_id";
+            $is_cowboy_already_placed = !is_null($this->getUniqueValueFromDB($sql));
+    
+            if ($is_cowboy_already_placed)
+                throw new BgaUserException($this->_('You already placed a cowboy here'));
+        }
+            
+        $sql = "UPDATE player SET cowboys=cowboys-1 WHERE player_id=$player_id";
+        $this->DbQuery($sql);
+
+        $sql = "INSERT INTO cowboys (cowboy_id, owner_id, location_type, location_id) VALUES ($cowboys, $player_id, '$location_type', $location_id)";
+        $this->DbQuery($sql);
+
+        [$x, $y] = $this->getCitySquareCoordinates($location_id);
+
+        $this->notifyAllPlayers('cowboyPlaced', clienttranslate('${player_name} places cowboy on city square (${x}, ${y})'), [
+            'player_name' => $this->getActivePlayerName(),
+            'x' => $x,
+            'y' => $y,
+            'cowboyId' => $cowboys,
+            'locationType' => $location_type,
+            'locationId' => $location_id
+        ]);
+
+        $this->gamestate->nextState('cowboyPlaced');
+    }
+
     /*
     
     Example:
@@ -515,8 +575,7 @@ class cssomeguy extends Table
                 'newTurnOrder' => $new_turn_order
             ]);
 
-            $sql = "SELECT player_id FROM player WHERE turn_order=1";
-            $first_player_id = $this->getUniqueValueFromDB($sql);
+            $first_player_id = $new_turn_order[1];
 
             $this->gamestate->changeActivePlayer($first_player_id);
             $this->giveExtraTime($first_player_id);
@@ -527,6 +586,20 @@ class cssomeguy extends Table
         $this->gamestate->changeActivePlayer($player_id);
         $this->giveExtraTime($player_id);
         $this->gamestate->nextState('nextPersonalityChoice');
+    }
+
+    function stCowboyPlaced()
+    {
+        $prev_player_id = $this->getActivePlayerId();
+        $sql = "SELECT player_id FROM player ORDER BY turn_order ASC";
+        $turn_order_ids = $this->getObjectListFromDB($sql, true);
+
+        $next_player_table = $this->createNextPlayerTable($turn_order_ids);
+        $next_player_id = $next_player_table[$prev_player_id];
+
+        $this->gamestate->changeActivePlayer($next_player_id);
+        $this->giveExtraTime($next_player_id);
+        $this->gamestate->nextState('nextPlayer');
     }
 
     /*

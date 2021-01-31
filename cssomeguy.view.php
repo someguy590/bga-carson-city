@@ -70,20 +70,31 @@ class view_cssomeguy_cssomeguy extends game_view
 
 
     $this->page->begin_block($this->getGameName() . '_' . $this->getGameName(), 'action_square');
-    $building_construction_x_start = 234;
-    $building_construction_y_start = 127;
-    $building_construction_scale = 52;
-    $building_construction_offset = 9;
-    $x_px = $building_construction_x_start;
-    for ($i = 0; $i < 7; $i++) {
+    $action_scale = 62;
+    foreach ($this->game->actions as $action_id => $action) {
+      $classes = '';
+      $x_px = 0;
+      $y_px = 0;
+
+      if ($action_id >= 0 && $action_id <= 3) {
+        $x_px = 336 + $action_id * $action_scale;
+        $y_px = 34;
+      }
+      else if ($action_id >= 4 && $action_id <= 13) {
+        $x_px = 593 - (($action_id - 4) * $action_scale);
+        $y_px = 123;
+      }
+      else {
+        $x_px = 112 + (($action_id - 14) * $action_scale);
+        $y_px = 218;
+      }
+
       $this->page->insert_block('action_square', [
-        'ACTION_SQUARE_ID' => $i,
-        'ACTION_SQUARE_CLASSES' => 'building_construction_square',
-        'CITY_SQUARE_ID' => $i,
+        'ACTION_SQUARE_ID' => $action_id,
+        'ACTION_SQUARE_CLASSES' => $classes,
         'LEFT' => $x_px,
-        'TOP' => $building_construction_y_start
+        'TOP' => $y_px
       ]);
-      $x_px += $building_construction_scale + $building_construction_offset;
     }
 
     $city_x_start = 55;

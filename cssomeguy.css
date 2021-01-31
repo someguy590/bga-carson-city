@@ -104,11 +104,24 @@
     height: 25px;
 }
 
+.action_square {
+    position: absolute;
+    width: 62px;
+    height: 60px;
+    z-index: 4;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .city_square {
     position: absolute;
     width: 74px;
     height: 75px;
     z-index: 4;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .building_construction_square {
@@ -275,6 +288,14 @@
     height: 23px;
 }
 
+/* 
+blue - 0000ff
+green - 008000
+orange - f07f16
+red - ff0000
+yellow - ffff00
+ */
+
 .player_piece.peg.peg_0000ff {
     background-position: 0px 0px;
 }
@@ -293,6 +314,38 @@
 
 .player_piece.peg.peg_ffff00 {
     background-position: -72px 0px;
+}
+
+.player_piece.cowboy {
+    width: 24px;
+    height: 30px;
+    z-index: 3;
+    position: relative;
+}
+
+.player_piece.cowboy.cowboy_0000ff {
+    background-position: -90px 0px;
+}
+
+.player_piece.cowboy.cowboy_008000 {
+    background-position: -114px 0px;
+}
+
+.player_piece.cowboy.cowboy_f07f16 {
+    background-position: -138px 0px;
+}
+
+.player_piece.cowboy.cowboy_ff0000 {
+    background-position: -162px 0px;
+}
+
+.player_piece.cowboy.cowboy_ffff00 {
+    background-position: -186px 0px;
+}
+
+.cowboy_wrapper {
+    width: 24px;
+    height: 30px;
 }
 
 .parcel {

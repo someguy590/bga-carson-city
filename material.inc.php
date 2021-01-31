@@ -124,6 +124,117 @@ $this->personalities = [
   ]
 ];
 
+$this->action_ids = [
+  'wages' => 0,
+  'ammunition' => 1,
+  'roads_3' => 2,
+  'roads_1' => 3,
+  'building_construction_12' => 4,
+  'building_construction_10' => 5,
+  'building_construction_8' => 6,
+  'building_construction_6' => 7,
+  'building_construction_5' => 8,
+  'building_construction_4' => 9,
+  'building_construction_3' => 10,
+  'parcels_income' => 11,
+  'cowboy_income' => 12,
+  'gambling_income' => 13,
+  'parcels_victory_points' => 14,
+  'cowboy_victory_points' => 15,
+  'estate_victory_points' => 16,
+  'buying_victory_points_5' => 17,
+  'buying_victory_points_4' => 18,
+  'buying_victory_points_3' => 19,
+  'buying_victory_points_2' => 20
+];
+
+$this->actions = [
+  $this->action_ids['wages'] => [
+    'name' => clienttranslate('wages'),
+    'is_duel_zone' => false
+  ],
+  $this->action_ids['ammunition'] => [
+    'name' => clienttranslate('ammunition'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['roads_3'] => [
+    'name' => clienttranslate('3 Roads'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['roads_1'] => [
+    'name' => clienttranslate('1 Road'),
+    'is_duel_zone' => false
+  ],
+  $this->action_ids['building_construction_12'] => [
+    'name' => clienttranslate('Building Construction $12'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_10'] => [
+    'name' => clienttranslate('Building Construction $10'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_8'] => [
+    'name' => clienttranslate('Building Construction $8'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_6'] => [
+    'name' => clienttranslate('Building Construction $6'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_5'] => [
+    'name' => clienttranslate('Building Construction $5'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_4'] => [
+    'name' => clienttranslate('Building Construction $4'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_3'] => [
+    'name' => clienttranslate('Building Construction $3'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['parcels_income'] => [
+    'name' => clienttranslate('Parcels Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['cowboy_income'] => [
+    'name' => clienttranslate('Cowboy Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['gambling_income'] => [
+    'name' => clienttranslate('Gambling Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['parcels_victory_points'] => [
+    'name' => clienttranslate('Parcels Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['cowboy_victory_points'] => [
+    'name' => clienttranslate('Cowboy Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['estate_victory_points'] => [
+    'name' => clienttranslate('Estate Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_5'] => [
+    'name' => clienttranslate('Buying Victory Points $5'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_4'] => [
+    'name' => clienttranslate('Buying Victory Points $4'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_3'] => [
+    'name' => clienttranslate('Buying Victory Points $3'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_2'] => [
+    'name' => clienttranslate('Buying Victory Points $2'),
+    'is_duel_zone' => true
+  ],
+];
+
 /*
 
 Example:
