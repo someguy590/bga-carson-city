@@ -168,6 +168,7 @@ define([
                         break;
 
                     case 'placeCowboy':
+                        this.connectClass('action_square', 'onclick', 'onPlaceCowboy');
                         this.connectClass('city_square', 'onclick', 'onPlaceCowboy');
                         break;
 

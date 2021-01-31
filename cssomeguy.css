@@ -104,6 +104,16 @@
     height: 25px;
 }
 
+.action_square {
+    position: absolute;
+    width: 62px;
+    height: 60px;
+    z-index: 4;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .city_square {
     position: absolute;
     width: 74px;

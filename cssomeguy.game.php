@@ -211,17 +211,24 @@ class cssomeguy extends Table
 
         $ranch_tile_type_id = $this->city_tile_type_ids['ranch'];
         $mine_tile_type_id = $this->city_tile_type_ids['mine'];
+        $building_location_3 = $this->action_ids['building_construction_3'];
+        $building_location_4 = $this->action_ids['building_construction_4'];
+        $building_location_10 = $this->action_ids['building_construction_10'];
+        $building_location_12 = $this->action_ids['building_construction_12'];
+
         $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
         $values = [];
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 0)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', 1)";
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', 5)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', 6)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_3)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_4)";
+        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_10)";
+        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_12)";
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
 
-        for ($i = 2; $i <= 4; $i++)
-            $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $i);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_5']);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_6']);
+        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_8']);
+        
     }
 
     function getCitySquareCoordinates($city_square_id): array
@@ -404,11 +411,13 @@ class cssomeguy extends Table
             }
         }
 
-        $sql = "SELECT owner_id FROM cowboys WHERE location_type='$location_type' AND location_id=$location_id AND owner_id=$player_id";
-        $is_cowboy_already_placed = !is_null($this->getUniqueValueFromDB($sql));
-
-        if ($is_cowboy_already_placed)
-            throw new BgaUserException($this->_('You already placed a cowboy here'));
+        if ($location_type == 'city' || ($location_type == 'action' && $this->actions[$location_id]['is_duel_zone'])) {
+            $sql = "SELECT owner_id FROM cowboys WHERE location_type='$location_type' AND location_id=$location_id AND owner_id=$player_id";
+            $is_cowboy_already_placed = !is_null($this->getUniqueValueFromDB($sql));
+    
+            if ($is_cowboy_already_placed)
+                throw new BgaUserException($this->_('You already placed a cowboy here'));
+        }
             
         $sql = "UPDATE player SET cowboys=cowboys-1 WHERE player_id=$player_id";
         $this->DbQuery($sql);

@@ -149,27 +149,90 @@ $this->action_ids = [
 ];
 
 $this->actions = [
-  $this->action_ids['wages'] => ['name' => clienttranslate('wages')],
-  $this->action_ids['ammunition'] => ['name' => clienttranslate('ammunition')],
-  $this->action_ids['roads_3'] => ['name' => clienttranslate('3 Roads')],
-  $this->action_ids['roads_1'] => ['name' => clienttranslate('1 Road')],
-  $this->action_ids['building_construction_12'] => ['name' => clienttranslate('Building Construction $12')],
-  $this->action_ids['building_construction_10'] => ['name' => clienttranslate('Building Construction $10')],
-  $this->action_ids['building_construction_8'] => ['name' => clienttranslate('Building Construction $8')],
-  $this->action_ids['building_construction_6'] => ['name' => clienttranslate('Building Construction $6')],
-  $this->action_ids['building_construction_5'] => ['name' => clienttranslate('Building Construction $5')],
-  $this->action_ids['building_construction_4'] => ['name' => clienttranslate('Building Construction $4')],
-  $this->action_ids['building_construction_3'] => ['name' => clienttranslate('Building Construction $3')],
-  $this->action_ids['parcels_income'] => ['name' => clienttranslate('Parcels Income')],
-  $this->action_ids['cowboy_income'] => ['name' => clienttranslate('Cowboy Income')],
-  $this->action_ids['gambling_income'] => ['name' => clienttranslate('Gambling Income')],
-  $this->action_ids['parcels_victory_points'] => ['name' => clienttranslate('Parcels Victory Points')],
-  $this->action_ids['cowboy_victory_points'] => ['name' => clienttranslate('Cowboy Victory Points')],
-  $this->action_ids['estate_victory_points'] => ['name' => clienttranslate('Estate Victory Points')],
-  $this->action_ids['buying_victory_points_5'] => ['name' => clienttranslate('Buying Victory Points $5')],
-  $this->action_ids['buying_victory_points_4'] => ['name' => clienttranslate('Buying Victory Points $4')],
-  $this->action_ids['buying_victory_points_3'] => ['name' => clienttranslate('Buying Victory Points $3')],
-  $this->action_ids['buying_victory_points_2'] => ['name' => clienttranslate('Buying Victory Points $2')],
+  $this->action_ids['wages'] => [
+    'name' => clienttranslate('wages'),
+    'is_duel_zone' => false
+  ],
+  $this->action_ids['ammunition'] => [
+    'name' => clienttranslate('ammunition'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['roads_3'] => [
+    'name' => clienttranslate('3 Roads'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['roads_1'] => [
+    'name' => clienttranslate('1 Road'),
+    'is_duel_zone' => false
+  ],
+  $this->action_ids['building_construction_12'] => [
+    'name' => clienttranslate('Building Construction $12'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_10'] => [
+    'name' => clienttranslate('Building Construction $10'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_8'] => [
+    'name' => clienttranslate('Building Construction $8'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_6'] => [
+    'name' => clienttranslate('Building Construction $6'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_5'] => [
+    'name' => clienttranslate('Building Construction $5'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_4'] => [
+    'name' => clienttranslate('Building Construction $4'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['building_construction_3'] => [
+    'name' => clienttranslate('Building Construction $3'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['parcels_income'] => [
+    'name' => clienttranslate('Parcels Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['cowboy_income'] => [
+    'name' => clienttranslate('Cowboy Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['gambling_income'] => [
+    'name' => clienttranslate('Gambling Income'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['parcels_victory_points'] => [
+    'name' => clienttranslate('Parcels Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['cowboy_victory_points'] => [
+    'name' => clienttranslate('Cowboy Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['estate_victory_points'] => [
+    'name' => clienttranslate('Estate Victory Points'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_5'] => [
+    'name' => clienttranslate('Buying Victory Points $5'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_4'] => [
+    'name' => clienttranslate('Buying Victory Points $4'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_3'] => [
+    'name' => clienttranslate('Buying Victory Points $3'),
+    'is_duel_zone' => true
+  ],
+  $this->action_ids['buying_victory_points_2'] => [
+    'name' => clienttranslate('Buying Victory Points $2'),
+    'is_duel_zone' => true
+  ],
 ];
 
 /*
