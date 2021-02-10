@@ -28,35 +28,14 @@ ALTER TABLE `player` ADD `turn_order` INT UNSIGNED NOT NULL;
 ALTER TABLE `player` ADD `personality` INT UNSIGNED;
 ALTER TABLE `player` ADD `is_using_personality_benefit` BIT(1);
 
-CREATE TABLE IF NOT EXISTS `city_tiles` (
+CREATE TABLE IF NOT EXISTS `tokens` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` varchar(16) NOT NULL,
   `card_type_arg` int(11) NOT NULL,
   `card_location` varchar(21) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
+  `owner_id` int(10) unsigned,
   PRIMARY KEY (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
-CREATE TABLE IF NOT EXISTS `roads` (
-  `road_id` int unsigned NOT NULL,
-  PRIMARY KEY (`road_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `parcels` (
-  `parcel_id` int unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`parcel_id`),
-  FOREIGN KEY (`owner_id`) REFERENCES player(`player_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `cowboys` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `cowboy_id` int unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
-  `location_type` varchar(10) NOT NULL,
-  `location_id` int unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`owner_id`) REFERENCES player(`player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):

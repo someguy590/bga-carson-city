@@ -112,7 +112,7 @@ class view_cssomeguy_cssomeguy extends game_view
       ]);
     }
 
-    $placed_roads = $this->game->getObjectListFromDB("SELECT road_id FROM roads", true);
+    $placed_roads = $this->game->getObjectListFromDB("SELECT card_location_arg FROM tokens WHERE card_type='road'", true);
 
     $horizontal_road_row_size = 8;
     $horizontal_road_x_start = 59;
