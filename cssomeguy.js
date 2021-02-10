@@ -104,41 +104,47 @@ define([
                 dojo.place(this.format_block('jstplRoundTrackerToken', {}), 'tiles');
                 this.placeOnObject('round_tracker_token', 'initial_round_tracker_position');
 
-                let buildingConstructionSquares = gamedatas.buildingConstructionSquares;
-                for (let buildingConstructionSquare of Object.values(buildingConstructionSquares)) {
-                    dojo.place(this.format_block('jstplCityTile', {
-                        cityTileId: buildingConstructionSquare.id,
-                        cityTileTypeId: buildingConstructionSquare.type
-                    }), 'tiles');
-                    this.placeOnObject('city_tile_' + buildingConstructionSquare.id, 'action_square_' + buildingConstructionSquare.location_arg);
-                }
-
-                let parcels = gamedatas.parcels;
-                for (let { parcelId, ownerId } of parcels) {
-                    dojo.place(this.format_block('jstplParcel', {
-                        parcelId: parcelId,
-                        playerId: ownerId,
-                        color: this.gamedatas.players[ownerId].color
-                    }), 'tiles');
-                    this.placeOnObject(`parcel_${parcelId}_${ownerId}`, 'city_square_' + parcelId);
-                }
-
-                let cityTiles = gamedatas.cityTiles;
-                for (let cityTile of Object.values(cityTiles)) {
-                    dojo.place(this.format_block('jstplCityTile', {
-                        cityTileId: cityTile.id,
-                        cityTileTypeId: cityTile.type
-                    }), 'tiles');
-                    this.placeOnObject('city_tile_' + cityTile.id, 'city_square_' + cityTile.location_arg);
-                }
-
-                let cowboys = gamedatas.cowboys;
-                for (let cowboy of cowboys) {
-                    dojo.place(this.format_block('jstplCowboy', {
-                        cowboyId: cowboy.cowboyId,
-                        playerId: cowboy.playerId,
-                        color: this.gamedatas.players[cowboy.playerId].color
-                    }), `${cowboy.locationType}_square_${cowboy.locationId}`);
+                for (let token of gamedatas.tokens) {
+                    if (token.locationType == 'action') {
+                        if (token.type == 'cowboy') {
+                            dojo.place(this.format_block('jstplCowboy', {
+                                cowboyId: token.id,
+                                playerId: token.ownerId,
+                                color: this.gamedatas.players[token.ownerId].color
+                            }), `${token.locationType}_square_${token.locationId}`);
+                        }
+                        else if (token.type == 'tile') {
+                            dojo.place(this.format_block('jstplCityTile', {
+                                cityTileId: token.id,
+                                cityTileTypeId: token.typeId
+                            }), 'tiles');
+                            this.placeOnObject('city_tile_' + token.id, token.locationType + '_square_' + token.locationId);
+                        }
+                    }
+                    else if (token.locationType == 'city') {
+                        if (token.type == 'parcel') {
+                            dojo.place(this.format_block('jstplParcel', {
+                                parcelId: token.locationId,
+                                playerId: token.ownerId,
+                                color: this.gamedatas.players[token.ownerId].color
+                            }), 'tiles');
+                            this.placeOnObject(`parcel_${token.locationId}_${token.ownerId}`, token.locationType + '_square_' + token.locationId);
+                        }
+                        else if (token.type == 'tile') {
+                            dojo.place(this.format_block('jstplCityTile', {
+                                cityTileId: token.id,
+                                cityTileTypeId: token.typeId
+                            }), 'tiles');
+                            this.placeOnObject(token.locationType + '_tile_' + token.id, token.locationType + '_square_' + token.locationId);
+                        }
+                        else if (token.type == 'cowboy') {
+                            dojo.place(this.format_block('jstplCowboy', {
+                                cowboyId: token.id,
+                                playerId: token.ownerId,
+                                color: this.gamedatas.players[token.ownerId].color
+                            }), `${token.locationType}_square_${token.locationId}`);
+                        }
+                    }
                 }
 
                 // Setup game notifications to handle (see "setupNotifications" method below)

@@ -37,8 +37,8 @@ class cssomeguy extends Table
             'isNextInitialParcelClaimClockwise' => 10
         ]);
 
-        $this->city_tiles_deck = self::getNew("module.common.deck");
-        $this->city_tiles_deck->init('city_tiles');
+        $this->tokens_deck = self::getNew("module.common.deck");
+        $this->tokens_deck->init('tokens');
     }
 
     protected function getGameName()
@@ -117,15 +117,8 @@ class cssomeguy extends Table
         $data['players'] = $this->getCollectionFromDb($sql);
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $data['buildingConstructionSquares'] = $this->city_tiles_deck->getCardsInLocation('building_construction');
-
-        $sql = "SELECT parcel_id parcelId, owner_id ownerId FROM parcels";
-        $data['parcels'] = $this->getObjectListFromDB($sql);
-
-        $data['cityTiles'] = $this->city_tiles_deck->getCardsInLocation('city');
-
-        $sql = "SELECT cowboy_id cowboyId, owner_id playerId, location_type locationType, location_id locationId FROM cowboys";
-        $data['cowboys'] = $this->getObjectListFromDB($sql);
+        $sql = "SELECT card_id id, card_type type, card_type_arg typeId, card_location locationType, card_location_arg locationId, owner_id ownerId FROM tokens WHERE card_location <> 'deck'";
+        $data['tokens'] = $this->getObjectListFromDB($sql);
 
         $data['personalityIds'] = $this->personality_ids;
 
@@ -170,22 +163,25 @@ class cssomeguy extends Table
         } while (in_array($center_location, $occupied_locations));
         $occupied_locations[] = $center_location;
         $house_tile_type_id = $this->city_tile_type_ids['house'];
-        $sql = "INSERT INTO city_tiles (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, $house_tile_type_id , -1, 'city', $center_location)";
+        $sql = "INSERT INTO tokens (card_id, card_type, card_type_arg, card_location, card_location_arg) VALUES (0, 'tile' , $house_tile_type_id, 'city', $center_location)";
         $this->DbQuery($sql);
 
+        $sql = "INSERT INTO tokens (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $values = [];
+        
         // roads
         $horizontal_road_row_size = 8;
         $top_horizontal_road_id = $center_y_location * 17 + $center_x_location;
         $bottom_horizontal_road_id = ($center_y_location + 1) * 17 + $center_x_location;
         $left_vertical_road_id = $center_y_location * 17 + $center_x_location + $horizontal_road_row_size;
         $right_vertical_road_id = $left_vertical_road_id + 1;
-        $sql = "INSERT INTO roads (road_id) VALUES ($top_horizontal_road_id), ($bottom_horizontal_road_id), ($left_vertical_road_id), ($right_vertical_road_id)";
-        $this->DbQuery($sql);
+        $values[] = "('road', -1, 'city', $top_horizontal_road_id)";
+        $values[] = "('road', -1, 'city', $bottom_horizontal_road_id)";
+        $values[] = "('road', -1, 'city', $left_vertical_road_id)";
+        $values[] = "('road', -1, 'city', $right_vertical_road_id)";
 
         // mountains
         $mountain_tile_type_id = $this->city_tile_type_ids['mountain'];
-        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
-        $values = [];
         for ($i = 0; $i < $this->city_tiles[$this->city_tile_type_ids['mountain']]['count']; $i++) {
             do {
                 $mountain_x_location = bga_rand(1, 6);
@@ -193,7 +189,7 @@ class cssomeguy extends Table
                 $mountain_location = $mountain_y_location * 8 + $mountain_x_location;
             } while (in_array($mountain_location, $occupied_locations));
             $occupied_locations[] = $mountain_location;
-            $values[] = "($mountain_tile_type_id, -1, 'city', $mountain_location)";
+            $values[] = "('tile', $mountain_tile_type_id, 'city', $mountain_location)";
         }
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
@@ -204,10 +200,10 @@ class cssomeguy extends Table
         $buildings = [];
         foreach ($this->city_tiles as $city_tile_type_id => $city_tile) {
             if ($city_tile['is_building'])
-                $buildings[] = ['type' => $city_tile_type_id, 'type_arg' => -1, 'nbr' => $city_tile['count']];
+                $buildings[] = ['type' => 'tile', 'type_arg' => $city_tile_type_id, 'nbr' => $city_tile['count']];
         }
-        $this->city_tiles_deck->createCards($buildings);
-        $this->city_tiles_deck->shuffle('deck');
+        $this->tokens_deck->createCards($buildings);
+        $this->tokens_deck->shuffle('deck');
 
         $ranch_tile_type_id = $this->city_tile_type_ids['ranch'];
         $mine_tile_type_id = $this->city_tile_type_ids['mine'];
@@ -216,19 +212,18 @@ class cssomeguy extends Table
         $building_location_10 = $this->action_ids['building_construction_10'];
         $building_location_12 = $this->action_ids['building_construction_12'];
 
-        $sql = "INSERT INTO city_tiles (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
+        $sql = "INSERT INTO tokens (card_type, card_type_arg, card_location, card_location_arg) VALUES ";
         $values = [];
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_3)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_4)";
-        $values[] = "($ranch_tile_type_id, -1, 'building_construction', $building_location_10)";
-        $values[] = "($mine_tile_type_id, -1, 'building_construction', $building_location_12)";
+        $values[] = "('tile', $ranch_tile_type_id, 'action', $building_location_3)";
+        $values[] = "('tile', $mine_tile_type_id, 'action', $building_location_4)";
+        $values[] = "('tile', $ranch_tile_type_id, 'action', $building_location_10)";
+        $values[] = "('tile', $mine_tile_type_id, 'action', $building_location_12)";
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
 
-        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_5']);
-        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_6']);
-        $this->city_tiles_deck->pickCardForLocation('deck', 'building_construction', $this->action_ids['building_construction_8']);
-        
+        $this->tokens_deck->pickCardForLocation('deck', 'action', $this->action_ids['building_construction_5']);
+        $this->tokens_deck->pickCardForLocation('deck', 'action', $this->action_ids['building_construction_6']);
+        $this->tokens_deck->pickCardForLocation('deck', 'action', $this->action_ids['building_construction_8']);
     }
 
     function getCitySquareCoordinates($city_square_id): array
@@ -251,8 +246,9 @@ class cssomeguy extends Table
     {
         $this->checkAction('claimParcel');
 
-        $sql = "SELECT parcel_id FROM parcels WHERE parcel_id=$parcel_id";
-        $is_parcel_claimed = !is_null($this->getUniqueValueFromDB($sql));
+        $sql = "SELECT owner_id FROM tokens WHERE card_type='parcel' AND card_location='city' AND card_location_arg=$parcel_id";
+        $parcels = $this->getUniqueValueFromDB($sql);
+        $is_parcel_claimed = !is_null($parcels);
 
         if ($is_parcel_claimed)
             throw new BgaUserException($this->_('Parcel already claimed'));
@@ -262,7 +258,7 @@ class cssomeguy extends Table
         $sql = "UPDATE player SET property_tiles=property_tiles-1 WHERE player_id=$player_id";
         $this->DbQuery($sql);
 
-        $sql = "INSERT INTO parcels (parcel_id, owner_id) VALUES ($parcel_id, $player_id)";
+        $sql = "INSERT INTO tokens (card_type, card_type_arg, card_location, card_location_arg, owner_id) VALUES ('parcel', -1, 'city', $parcel_id, $player_id)";
         $this->DbQuery($sql);
 
         [$x, $y] = $this->getCitySquareCoordinates($parcel_id);
@@ -401,28 +397,33 @@ class cssomeguy extends Table
         if ($cowboys == 0)
             throw new BgaUserException($this->_('You have no more cowboys left'));
 
-        if ($location_type == 'city') {
-            $sql = "SELECT owner_id FROM parcels WHERE parcel_id=$location_id";
-            $is_parceled = !is_null($this->getUniqueValueFromDB($sql));
-            if ($is_parceled) {
-                $is_built_on = empty($this->city_tiles_deck->getCardsInLocation($location_type, $location_id));
-                if ($is_built_on)
+        $is_duel_zone = $location_type == 'city' || ($location_type == 'action' && $this->actions[$location_id]['is_duel_zone']);
+        if ($is_duel_zone) {
+            $has_parcel = false;
+            $has_building = false;
+            $sql = "SELECT card_type type, card_type_arg typeId, card_location locationType, card_location_arg locationId, owner_id ownerId FROM tokens WHERE card_location='$location_type' AND card_location_arg=$location_id";
+            $tokens = $this->getObjectListFromDB($sql);
+            foreach ($tokens as $i => $token) {
+                if ($token['type'] == 'cowboy' && $token['ownerId'] == $player_id)
+                    throw new BgaUserException($this->_('You already placed a cowboy here'));
+                else if ($token['type'] == 'parcel')
+                    $has_parcel = true;
+                else if ($token['type'] == 'tile' && $this->city_tiles[$token['typeId']]['is_building'])
+                    $has_building = true;
+            }
+
+            if ($location_type == 'city') {
+                $is_parcel_empty = $has_parcel && !$has_building;
+                if ($is_parcel_empty) {
                     throw new BgaUserException($this->_('You cannot place a cowboy on an empty parcel'));
+                }
             }
         }
 
-        if ($location_type == 'city' || ($location_type == 'action' && $this->actions[$location_id]['is_duel_zone'])) {
-            $sql = "SELECT owner_id FROM cowboys WHERE location_type='$location_type' AND location_id=$location_id AND owner_id=$player_id";
-            $is_cowboy_already_placed = !is_null($this->getUniqueValueFromDB($sql));
-    
-            if ($is_cowboy_already_placed)
-                throw new BgaUserException($this->_('You already placed a cowboy here'));
-        }
-            
         $sql = "UPDATE player SET cowboys=cowboys-1 WHERE player_id=$player_id";
         $this->DbQuery($sql);
 
-        $sql = "INSERT INTO cowboys (cowboy_id, owner_id, location_type, location_id) VALUES ($cowboys, $player_id, '$location_type', $location_id)";
+        $sql = "INSERT INTO tokens (card_type, card_type_arg, card_location, card_location_arg, owner_id) VALUES ('cowboy', 0, '$location_type', $location_id, $player_id)";
         $this->DbQuery($sql);
 
         [$x, $y] = $this->getCitySquareCoordinates($location_id);
